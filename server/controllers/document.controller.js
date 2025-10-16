@@ -32,7 +32,7 @@ export const uploadDocument = async (req, res, next) => {
 
         console.log("Process starting " + document.fileName)
 
-        const chunks = await processDocument(req.file.path, req.file.mimtype)
+        const chunks = await processDocument(req.file.path, req.file.mimetype)
 
         const embeddings = await getEmbeddings(chunks)
 

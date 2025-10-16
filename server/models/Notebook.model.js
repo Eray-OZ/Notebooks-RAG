@@ -44,12 +44,7 @@ const NotebookSchema = new mongoose.Schema({
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }],
-    clonedFrom: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Notebook',
-        default: null
-    }
+    }]
 }, { timestamps: true })
 
 export default mongoose.model('Notebook', NotebookSchema)

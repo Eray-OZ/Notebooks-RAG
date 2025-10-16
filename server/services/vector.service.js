@@ -14,7 +14,7 @@ export const addVectors = async (tableName, chunks, embeddings) => {
 
 
     try {
-        const table = await db.createTable(tableName, data)
+        const table = await db.createTable(tableName, data, { mode: "overwrite" })
         console.log("LanceDB table creadet/updated")
         return table
     } catch (error) {
@@ -42,8 +42,13 @@ export const searchVectors = async (tableName, queryEmbedding, topN = 5) => {
         const table = await db.openTable(tableName)
         console.log(`Tablo '${tableName}' başarıyla açıldı.`);
 
-        const results = await table.search(queryEmbedding).limit(topN).execute()
+        const results = await table.search(queryEmbedding).limit(topN).toArray()
         console.log(`Tablo '${tableName}' için sonuç sayısı: ${results.length}`);
+
+        // --- DETAILED LOGGING START ---
+        console.log("DETAYLI ARAMA SONUÇLARI:");
+        console.log(JSON.stringify(results, null, 2));
+        // --- DETAILED LOGGING END ---
 
         const context = results.map(r => r.text).join('\n---\n')
         return context

@@ -45,11 +45,6 @@ export const postMessageToNotebook = async (req, res, next) => {
         let context = ""
 
 
-        console.log("--- DEBUG: ARAMA BAŞLIYOR ---");
-        console.log(`Sorgu Vektörünün ilk 5 elemanı: [${queryEmbedding.slice(0, 5).join(', ')}]`);
-        console.log(`İlişkili Belge Sayısı: ${notebook.associatedDocuments.length}`);
-
-
 
         const searchPromises = notebook.associatedDocuments.map(
             doc => searchVectors(doc.vectorTableName, queryEmbedding)
@@ -57,15 +52,10 @@ export const postMessageToNotebook = async (req, res, next) => {
 
         const searchResults = await Promise.all(searchPromises)
 
-
-        console.log("--- DEBUG: ARAMA BİTTİ ---");
-        console.log(`Oluşturulan Context'in Uzunluğu: ${context.length}`);
-        console.log("Oluşturulan Context:", context);
-
-
         context = searchResults.join('\n---\n')
 
-        console.log("Context " + context)
+
+
 
         const modelReply = await generateChatCompletion(message, context)
 
@@ -80,3 +70,52 @@ export const postMessageToNotebook = async (req, res, next) => {
         next(error)
     }
 }
+
+
+
+
+
+export const getPublicNotebooks = async (req, res, next) => {
+
+    try {
+
+        const notebooks = (await Notebook.find({ isPublic: true }).populate('owner', 'username')).sort({ createdAd: -1 })
+
+        res.status(200).json({ success: true, data: notebooks })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
+
+export const likeNotebook = async (req, res, next) => {
+
+    try {
+        const notebook = await Notebook.findById(req.params.notebookId)
+
+        if (!notebook) {
+            res.status(404)
+            throw new Error('Notebook not found')
+        }
+
+        const isLiked = notebook.likes.includes(req.user._id)
+
+        if (isLiked) {
+            notebook.likes.pull(req.user._id)
+        }
+        else {
+            notebook.likes.push(req.user._id)
+        }
+
+        await notebook.save()
+
+        res.status(200).json({ success: true, data: notebook })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
