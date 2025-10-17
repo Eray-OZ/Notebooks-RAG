@@ -79,7 +79,7 @@ export const getPublicNotebooks = async (req, res, next) => {
 
     try {
 
-        const notebooks = (await Notebook.find({ isPublic: true }).populate('owner', 'username')).sort({ createdAd: -1 })
+                const notebooks = await Notebook.find({ isPublic: true }).populate('owner', 'username').sort({ createdAt: -1 })
 
         res.status(200).json({ success: true, data: notebooks })
 

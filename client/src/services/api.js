@@ -31,5 +31,15 @@ export const loginUser = async (userData) => {
 }
 
 
+export const getPublicNotebooks = async () => {
+    try {
+        const response = await api.get('/notebooks/public')
+        return response.data
+    } catch (error) {
+        throw error.response.data
+    }
+}
+
+
 
 export default api

@@ -2,8 +2,8 @@ import React from "react"
 import { Routes, Route } from "react-router-dom"
 import RegisterPage from "./pages/RegisterPage"
 import LoginPage from "./pages/LoginPage"
+import HomePage from "./pages/HomePage"
 
-const HomePage = () => <div></div>
 
 const DashboardPage = () => <div></div>
 
@@ -13,7 +13,6 @@ function App() {
   return (
 
     <div>
-      <h1>Notebooks</h1>
       <Routes>
 
         <Route path="/" element={<HomePage />} />
