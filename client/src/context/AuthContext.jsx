@@ -26,10 +26,15 @@ export const AuthProvider = ({ children }) => {
 
 
     const loginAction = (data) => {
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('user', JSON.stringify(data.user))
-        setToken(data.token)
-        setUser(data.user)
+        const userPayload = {
+            _id: data._id,
+            username: data.username,
+            email: data.email
+        };
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(userPayload));
+        setToken(data.token);
+        setUser(userPayload);
     }
 
     const logoutAction = () => {

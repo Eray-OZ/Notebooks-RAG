@@ -34,7 +34,6 @@ const HomePage = () => {
 
     return (
         <div className="container-root">
-            <div className="backdrop-blur"></div>
             <div className="content-wrapper">
                 <div className="header">
                     <h1 className="title">Notebooks</h1>
@@ -53,7 +52,7 @@ const HomePage = () => {
                                 </div>
                                 <div className="card-body">
                                     <p className="notebook-description">
-                                        {notebook.description || 'A collection of thoughts, ideas, and research on this topic.'}
+                                        A collection of thoughts, ideas, and research on {notebook.title}.
                                     </p>
                                 </div>
                                 <div className="card-footer">
