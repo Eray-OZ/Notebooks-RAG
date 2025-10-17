@@ -10,8 +10,16 @@ export const protect = async (req, res, next) => {
         try {
 
             token = req.headers.authorization.split(' ')[1]
+            console.log("Token from header:", token);
+            console.log("JWT Secret from config:", config.jwtSecret);
             const decoded = jwt.verify(token, config.jwtSecret)
+
+            console.log("Decoded token:", decoded);
+
             req.user = await User.findById(decoded.id).select('-password')
+
+            console.log("User from DB:", req.user);
+
             next()
         } catch (error) {
             console.error(error)

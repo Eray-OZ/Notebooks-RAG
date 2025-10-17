@@ -119,3 +119,48 @@ export const likeNotebook = async (req, res, next) => {
     }
 }
 
+
+
+
+export const updateNotebook = async (req, res, next) => {
+
+    try {
+        const { title, isPublic, category } = req.body
+
+        const notebook = await Notebook.findById(req.params.notebookId)
+
+
+        if (!notebook) {
+            res.status(404)
+            throw new Error('Notebook Not Found')
+        }
+
+
+        if (notebook.owner.toString() !== req.user._id.toString()) {
+            res.status(403)
+            throw new Error('Not authorized to update this notebook')
+        }
+
+
+        if (title) {
+            notebook.title = title
+        }
+
+        if (typeof isPublic === 'boolean') {
+            notebook.isPublic = isPublic
+        }
+
+        if (category) {
+            notebook.category = category
+        }
+
+        const updatedNotebook = await notebook.save()
+
+        res.status(200).json({ success: true, data: updatedNotebook })
+
+
+    } catch (error) {
+        next(error)
+    }
+}
+
