@@ -45,10 +45,6 @@ export const searchVectors = async (tableName, queryEmbedding, topN = 5) => {
         const results = await table.search(queryEmbedding).limit(topN).toArray()
         console.log(`Tablo '${tableName}' için sonuç sayısı: ${results.length}`);
 
-        // --- DETAILED LOGGING START ---
-        console.log("DETAYLI ARAMA SONUÇLARI:");
-        console.log(JSON.stringify(results, null, 2));
-        // --- DETAILED LOGGING END ---
 
         const context = results.map(r => r.text).join('\n---\n')
         return context

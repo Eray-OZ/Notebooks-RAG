@@ -1,6 +1,6 @@
 import Notebook from '../models/Notebook.model.js'
 import Document from '../models/Document.model.js'
-import { getEmbeddings, generateChatCompletion } from '../services/gemini.service.js'
+import { getEmbeddings, generateChatCompletion } from '../services/ai.service.js'
 import { searchVectors } from '../services/vector.service.js'
 
 
@@ -46,9 +46,11 @@ export const postMessageToNotebook = async (req, res, next) => {
 
 
 
-        const searchPromises = notebook.associatedDocuments.map(
-            doc => searchVectors(doc.vectorTableName, queryEmbedding)
-        )
+        const searchPromises = notebook.associatedDocuments
+            .filter(doc => doc.status === 'ready' && doc.vectorTableName)
+            .map(
+                doc => searchVectors(doc.vectorTableName, queryEmbedding)
+            );
 
         const searchResults = await Promise.all(searchPromises)
 

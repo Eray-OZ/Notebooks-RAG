@@ -1,14 +1,16 @@
 import { readFile } from 'fs/promises'
-import * as pdf from 'pdf-parse'
+import { PDFParse } from 'pdf-parse'
 
 
 export const processDocument = async (filePath, fileType) => {
     let rawText = ''
 
     if (fileType === 'application/pdf') {
-        const dataBuffer = await readFile(filePath)
-        const data = await pdf(dataBuffer)
-        rawText = data.text
+        const dataBuffer = await readFile(filePath);
+        const parser = new PDFParse({ data: dataBuffer });
+        const result = await parser.getText();
+        rawText = result.text;
+        await parser.destroy();
     }
 
     else {
@@ -26,7 +28,7 @@ export const processDocument = async (filePath, fileType) => {
         chunks.push(chunk)
     }
 
-    console.log("Chunks service success")
+    console.log(`Oluşturulan chunk sayısı: ${chunks.length}`);
 
     return chunks
 }
