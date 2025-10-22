@@ -172,7 +172,9 @@ export const updateNotebook = async (req, res, next) => {
 export const getMyNotebooks = async (req, res, next) => {
     try {
 
-        const notebooks = await Notebook.find({ owner: req.user._id }).sort({ updatedAd: -1 })
+        const notebooks = await Notebook.find({ owner: req.user._id })
+            .populate('owner', 'username')
+            .sort({ updatedAt: -1 })
 
         res.status(200).json({ success: true, data: notebooks })
     } catch (error) {

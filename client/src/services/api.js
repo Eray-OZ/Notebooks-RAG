@@ -71,12 +71,30 @@ export const getMyDocuments = async () => {
 
 export const getMyNotebooks = async () => {
     try {
-        const response = await api.get('/mynotebooks')
+        const response = await api.get('/notebooks/mynotebooks')
         return response.data
     } catch (error) {
         throw error.response.data
     }
 }
+
+
+export const uploadDocument = async (file) => {
+    const formData = new FormData();
+    formData.append('document', file);
+
+    try {
+        const response = await api.post('/documents', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response.data;
+    }
+};
+
 
 
 export default api
