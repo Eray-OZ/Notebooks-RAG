@@ -1,32 +1,33 @@
-import express from 'express'
-import { createNotebook, postMessageToNotebook, getPublicNotebooks, getMyNotebooks, likeNotebook, updateNotebook, getNotebookById } from '../controllers/notebook.controller.js'
-import { protect } from '../middlewares/auth.middleware.js'
+import express from 'express';
+// --- DOĞRU SIRALAMA İLE IMPORTLAR ---
+import {
+    createNotebook,
+    postMessageToNotebook,
+    getPublicNotebooks, // SPESİFİK GET
+    getMyNotebooks,     // SPESİFİK GET
+    getNotebookById,    // DİNAMİK GET
+    likeNotebook,
+    updateNotebook
+} from '../controllers/notebook.controller.js';
+import { protect } from '../middlewares/auth.middleware.js';
 import { uploadDocument } from '../controllers/document.controller.js';
 import upload from '../middlewares/uploader.js';
 
+const router = express.Router();
 
-const router = express.Router()
 
-router.get('/public', getPublicNotebooks)
+router.get('/public', getPublicNotebooks);
 
-router.use(protect)
+router.use(protect);
 
-router.get('/:notebookId', getNotebookById);
+router.get('/mynotebooks', getMyNotebooks); // <-- /:notebookId'den ÖNCE olmalı
 
-router.patch('/:notebookId/like', likeNotebook)
+router.get('/:notebookId', getNotebookById); // <-- /mynotebooks'dan SONRA olmalı
 
-router.post('/', createNotebook)
+router.post('/', createNotebook);
+router.post('/:notebookId/messages', postMessageToNotebook);
+router.patch('/:notebookId/like', likeNotebook);
+router.patch('/:notebookId', updateNotebook);
+router.post('/:notebookId/documents', upload.single('document'), uploadDocument);
 
-router.post('/:notebookId/messages', postMessageToNotebook)
-
-router.patch('/:notebookId', updateNotebook)
-
-router.get('/mynotebooks', getMyNotebooks)
-
-router.post(
-    '/:notebookId/documents',
-    upload.single('document'), // 1. Multer dosyayı yakalar
-    uploadDocument             // 2. Controller fonksiyonu işler
-);
-
-export default router
+export default router;

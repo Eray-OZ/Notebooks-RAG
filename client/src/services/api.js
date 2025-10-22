@@ -151,4 +151,16 @@ export const getNotebookById = async (notebookId) => {
 
 
 
+export const postMessageToNotebook = async (notebookId, message) => {
+    try {
+
+        const response = await api.post(`/notebooks/${notebookId}/messages`, { message: message });
+        return response.data;
+    } catch (error) {
+        handleApiError(error, 'postMessageToNotebook');
+    }
+}
+
+
+
 export default api

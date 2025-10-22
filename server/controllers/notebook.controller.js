@@ -192,6 +192,8 @@ export const getMyNotebooks = async (req, res, next) => {
 
 
 export const getNotebookById = async (req, res, next) => {
+
+    console.log(`[Backend] getNotebookById started for ID: ${req.params.notebookId}`);
     try {
         const notebookId = req.params.notebookId;
 
@@ -200,6 +202,7 @@ export const getNotebookById = async (req, res, next) => {
             .populate('associatedDocuments');
 
         if (!notebook) {
+            console.log(`[Backend] Notebook not found for ID: ${notebookId}`);
             res.status(404);
             throw new Error('Notebook bulunamadı');
         }
@@ -210,8 +213,10 @@ export const getNotebookById = async (req, res, next) => {
             throw new Error('Bu notebook\'u görüntüleme yetkiniz yok');
         }
 
+        console.log(`[Backend] Sending notebook data for ID: ${notebookId}`);
         res.status(200).json({ success: true, data: notebook });
     } catch (error) {
+        console.error(`[Backend] Error in getNotebookById for ID: ${req.params.notebookId}`, error);
         next(error);
     }
 };

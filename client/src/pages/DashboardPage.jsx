@@ -24,6 +24,7 @@ const DashboardPage = () => {
                 setNotebooks(response.data)
             } catch (error) {
                 setError('fetch err::: users notebooks::: ' + error)
+                console.error("fetchNotebooks error:", error);
             }
             finally {
                 setLoading(false)
