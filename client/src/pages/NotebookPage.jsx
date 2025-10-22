@@ -122,8 +122,9 @@ const NotebookPage = () => {
     if (!notebook) return <div className="error">Notebook bulunamadı veya yüklenemedi.</div>;
 
     return (
-        <div className="main-container">
-            <aside className="left-panel">
+        <div className="notebook-page-wrapper">
+            <div className="main-container">
+                <aside className="left-panel">
                 <div className="upload-section">
                     <button 
                         className="upload-button" 
@@ -223,6 +224,7 @@ const NotebookPage = () => {
                     </div>
                 </div>
             </main>
+            </div>
         </div>
     );
 };

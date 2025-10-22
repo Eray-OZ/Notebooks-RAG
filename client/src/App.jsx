@@ -9,9 +9,6 @@ import Navbar from "./components/layout/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotebookPage from "./pages/NotebookPage"
 
-
-
-
 function App() {
   return (
     <AuthProvider>
@@ -24,7 +21,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/notebook/:notebookId" element={<NotebookPage />}></Route>
+              <Route path="/notebook/:notebookId" element={<NotebookPage />} />
             </Route>
           </Routes>
         </main>

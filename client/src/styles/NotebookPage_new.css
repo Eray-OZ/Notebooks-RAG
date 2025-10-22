@@ -19,11 +19,20 @@
     --processing-color: #007bff;
 }
 
-.notebook-page-wrapper {
-    width: 100%;
-    height: calc(100vh - 4.5rem);
-    overflow: hidden;
+html, body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: var(--background-color);
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+#root {
+    height: 100%;
+    width: 100%;
 }
 
 .loading {
