@@ -51,9 +51,13 @@ const HomePage = () => {
                                     <p className="notebook-author">by {notebook.owner.username}</p>
                                 </div>
                                 <div className="card-body">
-                                    <p className="notebook-description">
+                                    {notebook.description ? (
+                                        <p className="notebook-description">
+                                            {notebook.description}
+                                        </p>
+                                    ) : (<p className="notebook-description">
                                         A collection of thoughts, ideas, and research on {notebook.title}.
-                                    </p>
+                                    </p>)}
                                 </div>
                                 <div className="card-footer">
                                     <div className="likes-container">

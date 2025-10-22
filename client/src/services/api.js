@@ -27,6 +27,18 @@ api.interceptors.request.use(
 )
 
 
+const handleApiError = (error, functionName = 'API function') => {
+    console.error(`API Error details in ${functionName}:`, error); // Hatanın tamamını logla
+
+    if (error.response) {
+        throw error.response.data; // Backend'in { success: false, message: '...' } objesini fırlat
+    } else if (error.request) {
+        throw { success: false, message: 'Sunucuya ulaşılamadı. Lütfen ağ bağlantınızı kontrol edin veya sunucunun çalıştığından emin olun.' };
+    } else {
+        throw { success: false, message: `İstek oluşturulurken bir hata oluştu: ${error.message}` };
+    }
+}
+
 
 
 export const registerUser = async (userData) => {
@@ -92,6 +104,48 @@ export const uploadDocument = async (file) => {
         return response.data;
     } catch (error) {
         throw error.response.data;
+    }
+};
+
+
+
+
+export const createNotebook = async (notebookData) => { // 'title' parametresini alıyor
+    try {
+        const response = await api.post('/notebooks', notebookData);
+        return response.data;
+    } catch (error) {
+        handleApiError(error, 'createNotebook'); // Yardımcı fonksiyonu kullan
+    }
+};
+
+
+
+export const uploadDocumentToNotebook = async (notebookId, file) => {
+    const formData = new FormData()
+    formData.append('document', file)
+
+    try {
+
+        const response = await api.post(`/notebooks/${notebookId}/documents`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        handleApiError(error, 'uploadDocumentToNotebook')
+    }
+};
+
+
+
+export const getNotebookById = async (notebookId) => {
+    try {
+        const response = await api.get(`/notebooks/${notebookId}`);
+        return response.data;
+    } catch (error) {
+        handleApiError(error, 'getNotebookById');
     }
 };
 

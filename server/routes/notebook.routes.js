@@ -1,8 +1,8 @@
 import express from 'express'
-import { createNotebook, postMessageToNotebook, getPublicNotebooks, getMyNotebooks, likeNotebook, updateNotebook } from '../controllers/notebook.controller.js'
+import { createNotebook, postMessageToNotebook, getPublicNotebooks, getMyNotebooks, likeNotebook, updateNotebook, getNotebookById } from '../controllers/notebook.controller.js'
 import { protect } from '../middlewares/auth.middleware.js'
 import { uploadDocument } from '../controllers/document.controller.js';
-import upload from '../middleware/uploader.js';
+import upload from '../middlewares/uploader.js';
 
 
 const router = express.Router()
@@ -10,6 +10,8 @@ const router = express.Router()
 router.get('/public', getPublicNotebooks)
 
 router.use(protect)
+
+router.get('/:notebookId', getNotebookById);
 
 router.patch('/:notebookId/like', likeNotebook)
 

@@ -1,19 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
-import { getMyNotebooks } from '../services/api.js'
-import { Link } from 'react-router-dom'
+import { getMyNotebooks, createNotebook } from '../services/api.js'
+import { Link, useNavigate } from 'react-router-dom'
+import CreateNotebookModal from '../components/CreateNotebookModal'; // YENİ: Modal'ı import et
 
 
 const DashboardPage = () => {
+
+    const navigate = useNavigate()
+
 
     const { user } = useContext(AuthContext)
     const [notebooks, setNotebooks] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        const fetchDocuments = async () => {
+        const fetchNotebooks = async () => {
             try {
                 setLoading(true)
                 const response = await getMyNotebooks()
@@ -25,8 +29,12 @@ const DashboardPage = () => {
                 setLoading(false)
             }
         }
-        fetchDocuments()
+        fetchNotebooks()
     }, [])
+
+
+
+
 
 
     if (loading) {
@@ -45,6 +53,17 @@ const DashboardPage = () => {
                     <h1 className="title">My Notebooks</h1>
                 </div>
 
+
+                <div style={{ margin: '1rem 0' }}>
+                    <button
+                        onClick={() => setIsModalOpen(true)}
+                        style={{ padding: '0.5rem 1rem', background: 'green', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                    >
+                        + Yeni Notebook Oluştur
+                    </button>
+                </div>
+
+
                 {notebooks.length === 0 ? (
                     <p className="subtitle">Found No Notebooks</p>
                 ) : (
@@ -56,9 +75,16 @@ const DashboardPage = () => {
                                     <p className="notebook-author">by {notebook.owner.username}</p>
                                 </div>
                                 <div className="card-body">
-                                    <p className="notebook-description">
+
+                                    {notebook.description ? (
+                                        <p className="notebook-description">
+                                            {notebook.description}
+                                        </p>
+                                    ) : (<p className="notebook-description">
                                         A collection of thoughts, ideas, and research on {notebook.title}.
-                                    </p>
+                                    </p>)}
+
+
                                 </div>
                                 <div className="card-footer">
                                     <div className="likes-container">
@@ -72,6 +98,13 @@ const DashboardPage = () => {
                     </div>
                 )}
             </div>
+
+
+            <CreateNotebookModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+            />
+
         </div>
     );
 

@@ -4,22 +4,29 @@ import { getEmbeddings, generateChatCompletion } from '../services/ai.service.js
 import { searchVectors } from '../services/vector.service.js'
 
 
-export const createNotebook = async (req, res, next) => {
 
+
+
+export const createNotebook = async (req, res, next) => {
     try {
-        const { title, documentIds } = req.body
+        const { title, description, isPublic } = req.body;
 
         const notebook = await Notebook.create({
-            title,
+            title: title,
+            description: description || '',
             owner: req.user._id,
-            associatedDocuments: documentIds
-        })
+            associatedDocuments: [],
+            isPublic: typeof isPublic === 'boolean' ? isPublic : false
+        });
 
-        res.status(201).json({ success: true, data: notebook })
+        res.status(201).json({ success: true, data: notebook });
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
+
+
+
 
 
 export const postMessageToNotebook = async (req, res, next) => {
@@ -181,3 +188,30 @@ export const getMyNotebooks = async (req, res, next) => {
         next(error)
     }
 }
+
+
+
+export const getNotebookById = async (req, res, next) => {
+    try {
+        const notebookId = req.params.notebookId;
+
+        const notebook = await Notebook.findById(notebookId)
+            .populate('owner', 'username')
+            .populate('associatedDocuments');
+
+        if (!notebook) {
+            res.status(404);
+            throw new Error('Notebook bulunamadı');
+        }
+
+
+        if (notebook.owner._id.toString() !== req.user._id.toString()) {
+            res.status(403);
+            throw new Error('Bu notebook\'u görüntüleme yetkiniz yok');
+        }
+
+        res.status(200).json({ success: true, data: notebook });
+    } catch (error) {
+        next(error);
+    }
+};

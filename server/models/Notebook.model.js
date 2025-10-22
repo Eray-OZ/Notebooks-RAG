@@ -25,6 +25,11 @@ const NotebookSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    description: {
+        type: String,
+        trim: true,
+        default: ''
+    },
     associatedDocuments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Document'
