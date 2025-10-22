@@ -125,105 +125,105 @@ const NotebookPage = () => {
         <div className="notebook-page-wrapper">
             <div className="main-container">
                 <aside className="left-panel">
-                <div className="upload-section">
-                    <button 
-                        className="upload-button" 
-                        onClick={() => document.getElementById('fileInput').click()}
-                        disabled={isUploading}
-                    >
-                        <span className="material-symbols-outlined">upload_file</span>
-                        <span>Yeni Belge Yükle</span>
-                    </button>
-                    <input
-                        type="file"
-                        id="fileInput"
-                        accept=".pdf,.txt,.md"
-                        onChange={handleFileChange}
-                        disabled={isUploading}
-                        style={{ display: 'none' }}
-                    />
-                </div>
-                <h2 className="documents-header">
-                    <span className="material-symbols-outlined">folder_open</span>
-                    Belgeler
-                </h2>
-                <ul className="document-list">
-                    {(loading && !notebook.associatedDocuments?.length) && <li className="document-item">Güncelleniyor...</li>}
-                    {!loading && (!notebook.associatedDocuments || notebook.associatedDocuments.length === 0) ? (
-                        <li className="document-item">
-                            <p className="no-documents">Henüz belge yüklenmemiş.</p>
-                        </li>
-                    ) : (
-                        notebook.associatedDocuments.map((doc, index) => (
-                            <li key={doc._id || index} className={`document-item ${index === 0 ? 'active' : ''}`}>
-                                <span className="material-symbols-outlined document-icon">description</span>
-                                <div className="document-info">
-                                    <div className="document-title">{doc.fileName}</div>
-                                    <div className="document-status">
-                                        <span className={`status-indicator ${doc.status === 'ready' || doc.status === 'completed' ? 'ready' : doc.status === 'processing' || doc.status === 'uploading' ? 'processing' : 'error'}`}></span>
-                                        <span>{doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}</span>
-                                    </div>
-                                </div>
-                            </li>
-                        ))
-                    )}
-                </ul>
-            </aside>
-            
-            <main className="right-panel">
-                <div className="chat-area">
-                    {(notebook.messages && notebook.messages.length === 0) && (
-                        <div className="empty-chat-message">
-                            <p>Belgeyle ilgili sorularınızı buraya yazabilirsiniz.</p>
-                        </div>
-                    )}
-                    {notebook.messages?.map((msg, index) => (
-                        <div key={msg._id || index} className={`message ${msg.role}`}>
-                            <div className={`avatar ${msg.role}-avatar`}>
-                                <span className="material-symbols-outlined">
-                                    {msg.role === 'user' ? 'person' : 'smart_toy'}
-                                </span>
-                            </div>
-                            <div className="message-content">{msg.content}</div>
-                        </div>
-                    ))}
-                    {isSending && (
-                        <div className="message ai">
-                            <div className="avatar ai-avatar">
-                                <span className="material-symbols-outlined">smart_toy</span>
-                            </div>
-                            <div className="message-content">AI düşünüyor...</div>
-                        </div>
-                    )}
-                    {error && !loading && <div className="error">Hata: {error}</div>}
-                    <div ref={chatEndRef} />
-                </div>
-                
-                <div className="message-input-area">
-                    <div className="input-wrapper">
-                        <input
-                            className="message-input"
-                            placeholder="Mesajınızı buraya yazın..."
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            disabled={isSending}
-                            onKeyPress={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleSendMessage();
-                                }
-                            }}
-                        />
-                        <button 
-                            onClick={handleSendMessage} 
-                            className="send-button" 
-                            disabled={isSending || !newMessage.trim()}
+                    <div className="upload-section">
+                        <button
+                            className="upload-button"
+                            onClick={() => document.getElementById('fileInput').click()}
+                            disabled={isUploading}
                         >
-                            <span className="material-symbols-outlined">send</span>
+                            <span className="material-symbols-outlined">upload_file</span>
+                            <span>Yeni Belge Yükle</span>
                         </button>
+                        <input
+                            type="file"
+                            id="fileInput"
+                            accept=".pdf,.txt,.md"
+                            onChange={handleFileChange}
+                            disabled={isUploading}
+                            style={{ display: 'none' }}
+                        />
                     </div>
-                </div>
-            </main>
+                    <h2 className="documents-header">
+                        <span className="material-symbols-outlined">folder_open</span>
+                        Belgeler
+                    </h2>
+                    <ul className="document-list">
+                        {(loading && !notebook.associatedDocuments?.length) && <li className="document-item">Güncelleniyor...</li>}
+                        {!loading && (!notebook.associatedDocuments || notebook.associatedDocuments.length === 0) ? (
+                            <li className="document-item">
+                                <p className="no-documents">Henüz belge yüklenmemiş.</p>
+                            </li>
+                        ) : (
+                            notebook.associatedDocuments.map((doc, index) => (
+                                <li key={doc._id || index} className={`document-item ${index === 0 ? 'active' : ''}`}>
+                                    <span className="material-symbols-outlined document-icon">description</span>
+                                    <div className="document-info">
+                                        <div className="document-title">{doc.fileName}</div>
+                                        <div className="document-status">
+                                            <span className={`status-indicator ${doc.status === 'ready' || doc.status === 'completed' ? 'ready' : doc.status === 'processing' || doc.status === 'uploading' ? 'processing' : 'error'}`}></span>
+                                            <span>{doc.status.charAt(0).toUpperCase() + doc.status.slice(1)}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))
+                        )}
+                    </ul>
+                </aside>
+
+                <main className="right-panel">
+                    <div className="chat-area">
+                        {(notebook.messages && notebook.messages.length === 0) && (
+                            <div className="empty-chat-message">
+                                <p>Belgeyle ilgili sorularınızı buraya yazabilirsiniz.</p>
+                            </div>
+                        )}
+                        {notebook.messages?.map((msg, index) => (
+                            <div key={msg._id || index} className={`message ${msg.role}`}>
+                                <div className={`avatar ${msg.role}-avatar`}>
+                                    <span className="material-symbols-outlined">
+                                        {msg.role === 'user' ? 'person' : 'smart_toy'}
+                                    </span>
+                                </div>
+                                <div className="message-content">{msg.content}</div>
+                            </div>
+                        ))}
+                        {isSending && (
+                            <div className="message ai">
+                                <div className="avatar ai-avatar">
+                                    <span className="material-symbols-outlined">smart_toy</span>
+                                </div>
+                                <div className="message-content">AI düşünüyor...</div>
+                            </div>
+                        )}
+                        {error && !loading && <div className="error">Hata: {error}</div>}
+                        <div ref={chatEndRef} />
+                    </div>
+
+                    <div className="message-input-area">
+                        <div className="input-wrapper">
+                            <input
+                                className="message-input"
+                                placeholder="Mesajınızı buraya yazın..."
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                disabled={isSending}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSendMessage();
+                                    }
+                                }}
+                            />
+                            <button
+                                onClick={handleSendMessage}
+                                className="send-button"
+                                disabled={isSending || !newMessage.trim()}
+                            >
+                                <span className="material-symbols-outlined">send</span>
+                            </button>
+                        </div>
+                    </div>
+                </main>
             </div>
         </div>
     );

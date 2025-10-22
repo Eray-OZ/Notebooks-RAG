@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --primary-color: #007BFF;
+    --secondary-color: #0056b3;
+    --accent-color-1: #17A2B8;
+    --accent-color-2: #28A745;
+    --accent-color-3: #FFC107;
+    --background-color: #f4d6c0;
+    --card-light: #ffffff;
+    --text-dark: #212529;
+    --text-light: #6c757d;
+    --border-color: #dee2e6;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.modal-header {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    text-align: center;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    color: black
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15);
+    background-color: #ffffff;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-dark);
+}
+
+.form-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.form-checkbox input {
+    width: 1.25em;
+    height: 1.25em;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+}
+
+.form-checkbox label {
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-dark);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.modal-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-button.primary {
+    background-color: var(--accent-color-2);
+    color: white;
+}
+
+.modal-button.primary:hover {
+    opacity: 0.9;
+}
+
+.modal-button.primary:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.modal-button.secondary {
+    background-color: var(--border-color);
+    color: var(--text-dark);
+}
+
+.modal-button.secondary:hover {
+    background-color: #c8ced3;
+}
+
+.modal-button.secondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.modal-error {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}

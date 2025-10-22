@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createNotebook } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Modal.css';
 
 const CreateNotebookModal = ({ isOpen, onClose }) => {
     // State'ler
@@ -60,101 +61,73 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
 
     // Modal JSX yapısı
     return (
-        // Overlay Katmanı
-        <div style={modalOverlayStyle} onClick={handleClose}> {/* Dışarı tıklayınca kapat */}
-            {/* İçerik Penceresi (Tıklamayı durdur) */}
-            <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-                <h2>Yeni Notebook Oluştur</h2>
+        <div className="modal-overlay" onClick={handleClose}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <h2 className="modal-header">Yeni Notebook Oluştur</h2>
 
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Notebook Başlığı (Zorunlu)"
-                    style={inputStyle}
-                    disabled={isLoading}
-                    aria-label="Notebook Başlığı"
-                />
-
-                <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Açıklama (Opsiyonel)"
-                    rows="3"
-                    style={{ ...inputStyle, height: 'auto', resize: 'vertical' }}
-                    disabled={isLoading}
-                    aria-label="Notebook Açıklaması"
-                />
-
-                <div style={{ margin: '10px 0 20px 0', textAlign: 'left', paddingLeft: '5%' }}>
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={isPublic}
-                            onChange={(e) => setIsPublic(e.target.checked)}
-                            disabled={isLoading}
-                            style={{ marginRight: '5px' }}
-                        />
-                        Herkese Açık Yap
+                <div className="form-group">
+                    <label className="form-label" htmlFor="notebook-title">
+                        Notebook Başlığı
                     </label>
+                    <input
+                        type="text"
+                        id="notebook-title"
+                        className="form-input"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Örn: Proje Fikirleri"
+                        disabled={isLoading}
+                        aria-label="Notebook Başlığı"
+                    />
                 </div>
 
-                {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+                <div className="form-group">
+                    <label className="form-label" htmlFor="notebook-description">
+                        Açıklama
+                    </label>
+                    <textarea
+                        id="notebook-description"
+                        className="form-textarea"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Kısa bir açıklama girin..."
+                        disabled={isLoading}
+                        aria-label="Notebook Açıklaması"
+                    />
+                </div>
 
-                <div style={{ marginTop: '15px' }}>
+                <div className="form-checkbox">
+                    <input
+                        type="checkbox"
+                        id="public-checkbox"
+                        checked={isPublic}
+                        onChange={(e) => setIsPublic(e.target.checked)}
+                        disabled={isLoading}
+                    />
+                    <label htmlFor="public-checkbox">Herkese Açık Yap</label>
+                </div>
+
+                {error && <p className="modal-error">{error}</p>}
+
+                <div className="modal-actions">
                     <button
-                        onClick={handleCreate}
-                        disabled={isLoading || !title.trim()} // Başlık yoksa da pasif yap
-                        style={{ marginRight: '10px', padding: '8px 15px', cursor: 'pointer' }}
-                    >
-                        {isLoading ? 'Oluşturuluyor...' : 'Oluştur'}
-                    </button>
-                    <button
+                        className="modal-button secondary"
                         onClick={handleClose}
                         disabled={isLoading}
-                        style={{ padding: '8px 15px', cursor: 'pointer' }}
                     >
                         İptal
+                    </button>
+                    <button
+                        className="modal-button primary"
+                        onClick={handleCreate}
+                        disabled={isLoading || !title.trim()}
+                    >
+                        {isLoading ? 'Oluşturuluyor...' : 'Oluştur'}
                     </button>
                 </div>
             </div>
         </div>
     );
 };
-
-// --- GEREKLİ STİLLER ---
-const modalOverlayStyle = {
-    position: 'fixed', // Ekrana sabitler
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0, // Tüm ekranı kaplar
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Yarı saydam arka plan
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center', // İçeriği ortalar
-    zIndex: 1050 // Diğer içeriklerin üzerine çıkar (Bootstrap modal z-index'i gibi)
-};
-
-const modalContentStyle = {
-    backgroundColor: 'white',
-    padding: '25px',
-    borderRadius: '8px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // Hafif gölge
-    width: '90%', // Küçük ekranlarda daha iyi görünüm
-    maxWidth: '450px', // Maksimum genişlik
-    textAlign: 'center',
-    zIndex: 1051 // Overlay'in de üzerine çıkar
-};
-
-const inputStyle = {
-    width: 'calc(90% - 22px)', // Padding'i hesaba kat
-    padding: '10px',
-    marginBottom: '15px',
-    border: '1px solid #ccc',
-    borderRadius: '4px',
-    fontSize: '1rem'
-};
-// --- STİLLER BİTTİ ---
 
 export default CreateNotebookModal;
