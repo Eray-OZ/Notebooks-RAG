@@ -51,28 +51,23 @@ const NotebookPage = () => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [notebook?.messages]);
 
-    // Dosya Seçme Fonksiyonu
-    const handleFileChange = (e) => {
-        setSelectedFile(e.target.files[0]);
-        setUploadError('');
-    };
+    // Dosya Seçme ve Yükleme Fonksiyonu
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    // Dosya Yükleme Fonksiyonu
-    const handleUpload = async () => {
-        if (!selectedFile) {
-            setUploadError('Lütfen bir dosya seçin.');
-            return;
-        }
-        setIsUploading(true);
+        setSelectedFile(file);
         setUploadError('');
+        setIsUploading(true);
+
         try {
-            await uploadDocumentToNotebook(notebookId, selectedFile);
+            await uploadDocumentToNotebook(notebookId, file);
             setSelectedFile(null);
             document.getElementById('fileInput').value = null;
             await fetchNotebook(); // Listeyi güncellemek için veriyi tekrar çek
         } catch (err) {
             setUploadError(err.message || 'Dosya yüklenirken bir hata oluştu.');
-            console.error("handleUpload error:", err);
+            console.error("handleFileChange error:", err);
         } finally {
             setIsUploading(false);
         }
