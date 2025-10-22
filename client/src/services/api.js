@@ -11,6 +11,24 @@ const api = axios.create({
 })
 
 
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token')
+
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`
+        }
+        return config
+    },
+    (error) => {
+        return Promise.reject(error)
+    }
+)
+
+
+
+
 export const registerUser = async (userData) => {
     try {
         const response = await api.post('/auth/register', userData)
@@ -40,6 +58,25 @@ export const getPublicNotebooks = async () => {
     }
 }
 
+
+export const getMyDocuments = async () => {
+    try {
+        const response = await api.get('/documents')
+        return response.data
+    } catch (error) {
+        throw error.response.data
+    }
+}
+
+
+export const getMyNotebooks = async () => {
+    try {
+        const response = await api.get('/mynotebooks')
+        return response.data
+    } catch (error) {
+        throw error.response.data
+    }
+}
 
 
 export default api

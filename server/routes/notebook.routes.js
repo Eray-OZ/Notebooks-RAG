@@ -1,5 +1,5 @@
 import express from 'express'
-import { createNotebook, postMessageToNotebook, getPublicNotebooks, likeNotebook, updateNotebook } from '../controllers/notebook.controller.js'
+import { createNotebook, postMessageToNotebook, getPublicNotebooks, getMyNotebooks, likeNotebook, updateNotebook } from '../controllers/notebook.controller.js'
 import { protect } from '../middlewares/auth.middleware.js'
 
 
@@ -16,5 +16,7 @@ router.post('/', createNotebook)
 router.post('/:notebookId/messages', postMessageToNotebook)
 
 router.patch('/:notebookId', updateNotebook)
+
+router.get('/mynotebooks', getMyNotebooks)
 
 export default router
