@@ -27,8 +27,8 @@ const Navbar = () => {
                         </>
                     ) : (
                         <>
-                            <Link className="auth-link login" to="/login">Login</Link>
-                            <Link className="auth-link register" to="/register">Register</Link>
+                            <NavLink className="auth-link" to="/login">Login</NavLink>
+                            <NavLink className="auth-link" to="/register">Register</NavLink>
                         </>
                     )}
                 </div>

@@ -2,21 +2,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&display=swap');
 
 :root {
-    --primary-color: #007BFF;
-    --secondary-color: #0056b3;
-    --accent-color-1: #17A2B8;
-    --accent-color-2: #28A745;
-    --accent-color-3: #FFC107;
-    --background-color: #f4d6c0;
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --accent-color-1: #06b6d4;
+    --accent-color-2: #10b981;
+    --accent-color-3: #f59e0b;
+    --accent-color-4: #4CAF50;
+    --accent-color-5: #9C27B0;
+    --accent-color-6: #FF9800;
+    --accent-color-7: #F44336;
+    --accent-color-8: #00BCD4;
+    --accent-color-9: #795548;
+    --background-color: #fbbf24;
     --card-light: #ffffff;
-    --text-dark: #212529;
-    --text-light: #6c757d;
-    --border-color: #dee2e6;
-    --user-message-bg: #6A1B9A;
-    --ai-message-bg: #f0f0f0;
-    --success-color: #28a745;
-    --warning-color: #ffc107;
-    --processing-color: #007bff;
+    --text-dark: #111827;
+    --text-light: #374151;
+    --border-color: #d1d5db;
+    --user-message-bg: #7c3aed;
+    --ai-message-bg: #dbeafe;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --processing-color: #3b82f6;
 }
 
 .notebook-page-wrapper {
@@ -129,13 +135,45 @@
     background-color: #ffffff;
 }
 
+.document-item:nth-child(1) {
+    background-color: #fef3c7;
+    border-color: #fbbf24;
+}
+
+.document-item:nth-child(2) {
+    background-color: #dbeafe;
+    border-color: #3b82f6;
+}
+
+.document-item:nth-child(3) {
+    background-color: #d1fae5;
+    border-color: #10b981;
+}
+
+.document-item:nth-child(4) {
+    background-color: #fce7f3;
+    border-color: #ec4899;
+}
+
+.document-item:nth-child(5) {
+    background-color: #e0e7ff;
+    border-color: #6366f1;
+}
+
+.document-item:nth-child(6) {
+    background-color: #fed7aa;
+    border-color: #f97316;
+}
+
 .document-item:hover {
-    background-color: #f8f9fa;
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .document-item.active {
-    background-color: #e0f7fa;
-    border-color: var(--primary-color);
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .no-documents {
@@ -156,7 +194,7 @@
 
 .document-title {
     font-weight: 600;
-    color: var(--text-dark);
+    color: #111827;
     margin-bottom: 0.25rem;
 }
 

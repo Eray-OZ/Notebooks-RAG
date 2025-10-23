@@ -1,22 +1,15 @@
 import config from '../config/index.js';
 
-// Bu dosya artık hem Hugging Face hem de Gemini servislerini kullanıyor.
 
-// --- Hugging Face Servisleri ---
 
 const HF_API_BASE_URL = "https://api-inference.huggingface.co/models/";
 
-/**
- * Verilen metin parçaları (chunks) dizisi için Hugging Face modelini kullanarak TEK BİR API isteğinde embedding oluşturur.
- * @param {string[]} textChunks - Embedding oluşturulacak metin parçaları dizisi.
- * @returns {Promise<number[][]>} - Embedding vektörleri dizisi.
- */
+
 export const getEmbeddings = async (textChunks) => {
     const model = "intfloat/multilingual-e5-large";
     console.log(`Embedding alınıyor...`);
 
     const controller = new AbortController();
-    // Büyük bir istek olabileceğinden timeout süresini 2 dakika (120 saniye) yapalım.
     const timeoutId = setTimeout(() => controller.abort(), 120000);
 
     try {
@@ -27,7 +20,6 @@ export const getEmbeddings = async (textChunks) => {
                     'Authorization': `Bearer ${config.hfToken}`,
                     'Content-Type': 'application/json',
                 },
-                // API'nin toplu işlem özelliğini kullanıyoruz.
                 body: JSON.stringify({ inputs: textChunks }),
                 signal: controller.signal,
             }
@@ -43,7 +35,6 @@ export const getEmbeddings = async (textChunks) => {
 
         const result = await response.json();
 
-        // Sonucun bir dizi ve embedding vektörleri içerdiğini kontrol edelim
         if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
             console.log("Tüm embedding işlemleri başarıyla tamamlandı.");
             return result;
@@ -59,13 +50,11 @@ export const getEmbeddings = async (textChunks) => {
             throw new Error("İstek zaman aşımına uğradı.");
         }
         console.error("--- HUGGING FACE API İSTEĞİNDE BEKLENMEDİK HATA ---", error);
-        throw error; // Orijinal hatayı fırlat
+        throw error;
     }
 }
 
 
-// --- Gemini Servisleri ---
-// Aşağıdaki fonksiyonlar metin üretimi için hala Gemini API'sini kullanmaktadır.
 
 const GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
 

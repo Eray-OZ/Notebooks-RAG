@@ -1,16 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --primary-color: #007BFF;
-    --secondary-color: #0056b3;
-    --accent-color-1: #17A2B8;
-    --accent-color-2: #28A745;
-    --accent-color-3: #FFC107;
-    --background-color: #f4d6c0;
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --accent-color-1: #06b6d4;
+    --accent-color-2: #10b981;
+    --accent-color-3: #f59e0b;
+    --background-color: #fbbf24;
     --card-light: #ffffff;
-    --text-dark: #212529;
-    --text-light: #6c757d;
-    --border-color: #dee2e6;
+    --text-dark: #111827;
+    --text-light: #374151;
+    --border-color: #d1d5db;
 }
 
 .modal-overlay {

@@ -15,7 +15,7 @@
     width: 100%;
     max-width: 80rem;
     margin: 0 auto;
-            padding: 0 1.5rem;
+    padding: 0 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -54,7 +54,8 @@
     transition: width 0.3s ease-in-out;
 }
 
-.nav-link:hover::after, .nav-link.active::after {
+.nav-link:hover::after,
+.nav-link.active::after {
     width: 100%;
 }
 
@@ -68,24 +69,26 @@
     transition: background-color 0.2s, color 0.2s;
 }
 
-.auth-link.login {
-    background-color: transparent;
-    border: 2px solid var(--primary-color);
-    color: var(--primary-color);
+.auth-link {
+    text-decoration: none;
+    color: var(--text-light);
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    background-color: white; /* Varsayılan beyaz arkaplan */
+    border: 2px solid var(--border-light); /* Hafif bir kenarlık */
 }
 
-.auth-link.login:hover {
-    background-color: var(--primary-color);
-    color: white;
+.auth-link:hover {
+    background-color: var(--border-light); /* Hover durumunda hafif gri */
 }
 
-.auth-link.register {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.auth-link.register:hover {
-    opacity: 0.9;
+.auth-link.active {
+    background-color: var(--primary-color); /* Aktif olduğunda turuncu arkaplan */
+    color: white; /* Aktif olduğunda beyaz yazı */
+    border-color: var(--primary-color);
 }
 
 .user-greeting {
