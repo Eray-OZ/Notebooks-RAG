@@ -58,7 +58,7 @@
 
 .left-panel {
     width: 350px;
-    background-color: var(--background-color);
+    background-color: #f4d6c0;
     border-right: 1px solid var(--border-color);
     padding: 1.5rem;
     display: flex;
@@ -102,11 +102,19 @@
     cursor: not-allowed;
 }
 
+.upload-loading-message {
+    text-align: center;
+    margin-top: 1rem;
+    font-style: italic;
+    color: var(--processing-color);
+}
+
 .documents-header {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-dark);
     margin-bottom: 1.5rem;
+    margin-top: 2rem;
     padding-bottom: 0.75rem;
     border-bottom: 2px solid var(--primary-color);
     display: flex;
@@ -371,4 +379,29 @@
 
 .send-button .material-symbols-outlined {
     font-size: 1.75rem;
+}
+
+.add-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 1rem auto;
+    max-width: 200px;
+}
+
+.add-button:hover {
+    background-color: var(--secondary-color);
+}
+
+.add-button:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
 }

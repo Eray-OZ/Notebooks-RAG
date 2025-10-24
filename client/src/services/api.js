@@ -163,4 +163,16 @@ export const postMessageToNotebook = async (notebookId, message) => {
 
 
 
+export const associatedDocumentToNotebook = async (notebookId, documentId) => {
+    try {
+        const response = await api.patch(`/notebooks/${notebookId}/associate`, { documentId: documentId })
+        return response.data
+    } catch (error) {
+        handleApiError(error, 'associateDocumentToNotebook')
+    }
+}
+
+
+
+
 export default api

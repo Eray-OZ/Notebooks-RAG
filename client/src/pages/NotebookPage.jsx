@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import {
     getNotebookById,
     uploadDocumentToNotebook,
-    postMessageToNotebook
+    postMessageToNotebook,
+    associatedDocumentToNotebook,
+    getMyDocuments
 } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/NotebookPage.css';
@@ -19,11 +21,31 @@ const NotebookPage = () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState('');
+    const [uploadWarning, setUploadWarning] = useState('');
 
     // Sohbet State'leri
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
+    const [isProcessingDocument, setIsProcessingDocument] = useState(false);
     const chatEndRef = useRef(null);
+
+
+    const [allUserDocuments, setAllUserDocuments] = useState([])
+    const [libraryLoading, setLibraryLoading] = useState(false)
+    const [associateError, setAssociateError] = useState('')
+    const [associatingDocId, setAssociatingDocId] = useState(null)
+    const [selectedDocuments, setSelectedDocuments] = useState([]);
+
+    const handleCheckboxChange = (docId) => {
+        setSelectedDocuments(prevSelected => {
+            if (prevSelected.includes(docId)) {
+                return prevSelected.filter(id => id !== docId);
+            } else {
+                return [...prevSelected, docId];
+            }
+        });
+    };
+
 
     // Notebook verilerini çeken fonksiyon
     const fetchNotebook = async (showLoadingIndicator = false) => {
@@ -41,15 +63,34 @@ const NotebookPage = () => {
         }
     };
 
-    // Sayfa ilk yüklendiğinde notebook verilerini çek
     useEffect(() => {
-        fetchNotebook(true); // İlk yüklemede loading göster
+        const fetchAllDocs = async () => {
+            setLibraryLoading(true)
+            try {
+                const response = await getMyDocuments()
+                setAllUserDocuments(response.data || [])
+            } catch (error) {
+                console.error("err::: fetch documents " + error)
+            } finally {
+                setLibraryLoading(false)
+            }
+        }
+
+        fetchAllDocs()
+    }, [])
+
+    useEffect(() => {
+        fetchNotebook(true);
     }, [notebookId]);
 
-    // Yeni mesaj geldiğinde sohbeti en alta kaydır
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [notebook?.messages]);
+
+
+
+
+
 
     // Dosya Seçme ve Yükleme Fonksiyonu
     const handleFileChange = async (e) => {
@@ -58,10 +99,15 @@ const NotebookPage = () => {
 
         setSelectedFile(file);
         setUploadError('');
+        setUploadWarning('');
         setIsUploading(true);
+        setIsProcessingDocument(true);
 
         try {
-            await uploadDocumentToNotebook(notebookId, file);
+            const response = await uploadDocumentToNotebook(notebookId, file);
+            if (response.message) {
+                setUploadWarning(response.message);
+            }
             setSelectedFile(null);
             document.getElementById('fileInput').value = null;
             await fetchNotebook(); // Listeyi güncellemek için veriyi tekrar çek
@@ -70,6 +116,7 @@ const NotebookPage = () => {
             console.error("handleFileChange error:", err);
         } finally {
             setIsUploading(false);
+            setIsProcessingDocument(false);
         }
     };
 
@@ -82,8 +129,7 @@ const NotebookPage = () => {
         setIsSending(true);
         setError('');
 
-        // Optimistic UI (İsteğe bağlı): Kullanıcı mesajını hemen ekle
-        // Bu, backend yanıtını beklemeden daha hızlı bir his verir
+
         const tempMessageId = `temp_${Date.now()}`; // Geçici, benzersiz ID
         setNotebook(prev => ({
             ...prev,
@@ -109,6 +155,58 @@ const NotebookPage = () => {
     };
 
 
+    const handleAssociate = async (documentId) => {
+        setAssociatingDocId(documentId)
+        setAssociateError('')
+
+        try {
+            await associatedDocumentToNotebook(notebookId, documentId)
+        } catch (error) {
+            setAssociateError('err::: Associate Document')
+            console.error('handleAssociate Error:', error)
+        } finally {
+            setAssociatingDocId(null)
+        }
+    }
+
+    const handleAssociateSelected = async () => {
+        setAssociateError('');
+        try {
+            for (const docId of selectedDocuments) {
+                setAssociatingDocId(docId);
+                await associatedDocumentToNotebook(notebookId, docId);
+            }
+            await fetchNotebook();
+            setSelectedDocuments([]);
+        } catch (error) {
+            setAssociateError('Error associating documents. Please try again.');
+            console.error('handleAssociateSelected Error:', error);
+        } finally {
+            setAssociatingDocId(null);
+        }
+    };
+
+
+    const libraryDocuments = useMemo(() => {
+        if (!notebook || !allUserDocuments) return []
+
+        const associatedDocIds = new Set(notebook.associatedDocuments.map(doc =>
+            doc?._id
+        ))
+
+        return allUserDocuments.filter(doc => doc && !associatedDocIds.has(doc._id))
+    }, [notebook, allUserDocuments])
+
+
+
+    const truncateText = (text, maxLength) => {
+        // if (!text) return ''
+        if (text.length <= maxLength) {
+            return text
+        }
+        return text.substring(0, maxLength) + '...'
+    }
+
     // --- Render Kısmı ---
 
     // İlk yükleme veya ilk hatayı ele al
@@ -129,6 +227,8 @@ const NotebookPage = () => {
                             <span className="material-symbols-outlined">upload_file</span>
                             <span>Yeni Belge Yükle</span>
                         </button>
+                        {isProcessingDocument && <p className="upload-loading-message">Belge işleniyor...</p>}
+                        {uploadWarning && <p style={{ color: 'orange' }}>{uploadWarning}</p>}
                         <input
                             type="file"
                             id="fileInput"
@@ -138,9 +238,12 @@ const NotebookPage = () => {
                             style={{ display: 'none' }}
                         />
                     </div>
+
+
+
                     <h2 className="documents-header">
                         <span className="material-symbols-outlined">folder_open</span>
-                        Belgeler
+                        Documents
                     </h2>
                     <ul className="document-list">
                         {(loading && !notebook.associatedDocuments?.length) && <li className="document-item">Güncelleniyor...</li>}
@@ -163,6 +266,49 @@ const NotebookPage = () => {
                             ))
                         )}
                     </ul>
+
+
+
+                    <h2 className="documents-header">
+                        <span className="material-symbols-outlined">folder_open</span>
+                        Library
+                    </h2>
+                    <div className="upload-section">
+                        {libraryLoading && <p>Library Loading...</p>}
+                        {!libraryLoading && libraryDocuments.length === 0 && (
+                            <p>There are no other documents in your library</p>
+                        )}
+                        {associateError && <p>{associateError}</p>}
+
+                        {!libraryLoading && libraryDocuments.length > 0 && (
+                            <>
+                                <ul>
+                                    {libraryDocuments.map(doc => (
+                                        <li key={doc._id}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedDocuments.includes(doc._id)}
+                                                onChange={() => handleCheckboxChange(doc._id)}
+                                            />
+                                            <span>{truncateText(doc.fileName, 28)}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <button
+                                    onClick={handleAssociateSelected}
+                                    disabled={selectedDocuments.length === 0}
+                                    className='add-button'
+                                >
+                                    Add
+                                </button>
+                            </>
+                        )}
+
+
+                    </div>
+
+
+
                 </aside>
 
                 <main className="right-panel">

@@ -28,6 +28,63 @@ export const createNotebook = async (req, res, next) => {
 
 
 
+export const associatedDocument = async (req, res, next) => {
+    try {
+        const { notebookId } = req.params
+        const { documentId } = req.body
+
+        if (!documentId) {
+            res.status(400)
+            throw new Error("Found No Associated Documents")
+        }
+
+        const [notebook, document] = await Promise.all([
+            Notebook.findById(notebookId),
+            Document.findById(documentId)
+        ])
+
+
+        if (!notebook) {
+            throw new Error('Found No Notebook')
+        }
+
+        if (!document) {
+            throw new Error('Found No Documents')
+        }
+
+
+
+        if (notebook.owner.toString() !== req.user._id.toString() || document.owner.toString() !== req.user._id.toString()) {
+            res.status(403)
+            throw new Error('Not Authorized')
+        }
+
+
+
+        const updatedNotebook = await Notebook.findByIdAndUpdate(
+            notebookId,
+            {
+                $addToSet: {
+                    associatedDocuments: documentId
+                }
+            },
+            {
+                new: true, runValidators: true
+            }
+        ).populate('associatedDocuments')
+
+
+        res.status(200).json({ success: true, data: updatedNotebook })
+
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
+
+
 
 export const postMessageToNotebook = async (req, res, next) => {
     try {

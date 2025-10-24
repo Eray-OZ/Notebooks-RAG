@@ -77,17 +77,22 @@
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-    background-color: white; /* Varsayılan beyaz arkaplan */
-    border: 2px solid var(--border-light); /* Hafif bir kenarlık */
+    background-color: white;
+    /* Varsayılan beyaz arkaplan */
+    border: 2px solid var(--border-light);
+    /* Hafif bir kenarlık */
 }
 
 .auth-link:hover {
-    background-color: var(--border-light); /* Hover durumunda hafif gri */
+    background-color: var(--border-light);
+    /* Hover durumunda hafif gri */
 }
 
 .auth-link.active {
-    background-color: var(--primary-color); /* Aktif olduğunda turuncu arkaplan */
-    color: white; /* Aktif olduğunda beyaz yazı */
+    background-color: var(--primary-color);
+    /* Aktif olduğunda turuncu arkaplan */
+    color: white;
+    /* Aktif olduğunda beyaz yazı */
     border-color: var(--primary-color);
 }
 
@@ -98,7 +103,7 @@
 }
 
 .logout-button {
-    background-color: var(--accent-color-3);
+    background-color: #4CAF50;
     color: white;
     border: none;
     padding: 0.5rem 1rem;

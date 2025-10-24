@@ -22,43 +22,60 @@ export const uploadDocument = async (req, res, next) => {
         return next(new Error('Lütfen bir dosya yükleyin'));
     }
 
-    // 1. URL'den hangi notebook'a yüklendiğini al
     const { notebookId } = req.params;
     let document;
 
     try {
-        // 2. Notebook'u bul ve sahibini doğrula (Güvenlik)
         const notebook = await Notebook.findById(notebookId);
         if (!notebook) throw new Error('Notebook bulunamadı');
         if (notebook.owner.toString() !== req.user._id.toString()) {
             throw new Error('Bu notebook için yetkiniz yok');
         }
 
-        // 3. Belgeyi oluştur (işle, embed et, LanceDB'ye kaydet...)
+        // Issue 1 Fix: Check for existing document
+        let existingDocument = await Document.findOne({
+            owner: req.user._id,
+            fileName: req.file.originalname,
+        });
+
+        if (existingDocument) {
+            // Document already exists, just associate it with the notebook
+            if (!notebook.associatedDocuments.includes(existingDocument._id)) {
+                notebook.associatedDocuments.push(existingDocument._id);
+                await notebook.save();
+            }
+            return res.status(200).json({ success: true, data: existingDocument, message: 'Document already exists and has been associated.' });
+        }
+
+        // Issue 2 Fix: Create document and handle potential failure
         document = await Document.create({
             owner: req.user._id,
             fileName: req.file.originalname,
             status: 'processing',
         });
 
-        const chunks = await processDocument(req.file.path, req.file.mimetype);
-        const embeddings = await getEmbeddings(chunks);
-        const tableName = `doc_${document._id.toString()}`;
-        await addVectors(tableName, chunks, embeddings);
+        try {
+            const chunks = await processDocument(req.file.path, req.file.mimetype);
+            const embeddings = await getEmbeddings(chunks);
+            const tableName = `doc_${document._id.toString()}`;
+            await addVectors(tableName, chunks, embeddings);
+
+            document.status = 'ready';
+            document.vectorTableName = tableName;
+            await document.save();
+        } catch (processingError) {
+            // If processing fails, delete the created document
+            await Document.findByIdAndDelete(document._id);
+            throw processingError; // Re-throw the error
+        }
 
 
-        document.status = 'ready';
-        document.vectorTableName = tableName;
-        await document.save();
-
-        // 4. KRİTİK ADIM: Belgeyi doğrudan notebook'a bağla
         notebook.associatedDocuments.push(document._id);
         await notebook.save();
 
         res.status(201).json({ success: true, data: document });
 
     } catch (error) {
-        // ... (hata yönetimi)
         next(error);
     }
 };
