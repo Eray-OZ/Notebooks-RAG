@@ -225,7 +225,7 @@ const NotebookPage = () => {
                             disabled={isUploading}
                         >
                             <span className="material-symbols-outlined">upload_file</span>
-                            <span>Yeni Belge Yükle</span>
+                            <span>Upload Document</span>
                         </button>
                         {isProcessingDocument && <p className="upload-loading-message">Belge işleniyor...</p>}
                         {uploadWarning && <p style={{ color: 'orange' }}>{uploadWarning}</p>}
@@ -269,11 +269,12 @@ const NotebookPage = () => {
 
 
 
-                    <h2 className="documents-header">
-                        <span className="material-symbols-outlined">folder_open</span>
-                        Library
-                    </h2>
+
                     <div className="upload-section">
+                        <h2 className="library-header">
+                            <span className="material-symbols-outlined">library_books</span>
+                            Library
+                        </h2>
                         {libraryLoading && <p>Library Loading...</p>}
                         {!libraryLoading && libraryDocuments.length === 0 && (
                             <p>There are no other documents in your library</p>
@@ -282,17 +283,16 @@ const NotebookPage = () => {
 
                         {!libraryLoading && libraryDocuments.length > 0 && (
                             <>
-                                <ul>
-                                    {libraryDocuments.map(doc => (
-                                        <li key={doc._id}>
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedDocuments.includes(doc._id)}
-                                                onChange={() => handleCheckboxChange(doc._id)}
-                                            />
-                                            <span>{truncateText(doc.fileName, 28)}</span>
-                                        </li>
-                                    ))}
+                                <ul>                                    {libraryDocuments.map(doc => (
+                                    <li key={doc._id}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedDocuments.includes(doc._id)}
+                                            onChange={() => handleCheckboxChange(doc._id)}
+                                        />
+                                        <span>{truncateText(doc.fileName, 28)}</span>
+                                    </li>
+                                ))}
                                 </ul>
                                 <button
                                     onClick={handleAssociateSelected}

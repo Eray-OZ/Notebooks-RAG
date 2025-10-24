@@ -3,6 +3,7 @@ import { processDocument } from '../services/document.processor.js'
 import { getEmbeddings } from '../services/ai.service.js'
 import { addVectors } from '../services/vector.service.js'
 import Notebook from '../models/Notebook.model.js';
+import iconv from 'iconv-lite';
 
 
 export const getMyDocuments = async (req, res, next) => {
@@ -24,6 +25,7 @@ export const uploadDocument = async (req, res, next) => {
 
     const { notebookId } = req.params;
     let document;
+    const decodedFileName = iconv.decode(Buffer.from(req.file.originalname, 'latin1'), 'utf8');
 
     try {
         const notebook = await Notebook.findById(notebookId);
@@ -35,7 +37,7 @@ export const uploadDocument = async (req, res, next) => {
         // Issue 1 Fix: Check for existing document
         let existingDocument = await Document.findOne({
             owner: req.user._id,
-            fileName: req.file.originalname,
+            fileName: decodedFileName,
         });
 
         if (existingDocument) {
@@ -50,7 +52,7 @@ export const uploadDocument = async (req, res, next) => {
         // Issue 2 Fix: Create document and handle potential failure
         document = await Document.create({
             owner: req.user._id,
-            fileName: req.file.originalname,
+            fileName: decodedFileName,
             status: 'processing',
         });
 

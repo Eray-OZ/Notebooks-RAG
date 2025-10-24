@@ -122,6 +122,18 @@
     gap: 0.5rem;
 }
 
+.library-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
 .document-list {
     list-style: none;
     padding: 0;
@@ -404,4 +416,16 @@
 .add-button:disabled {
     background-color: #adb5bd;
     cursor: not-allowed;
+}
+
+.library-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }

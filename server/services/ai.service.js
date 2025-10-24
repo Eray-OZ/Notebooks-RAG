@@ -10,7 +10,7 @@ export const getEmbeddings = async (textChunks) => {
     console.log(`Embedding alınıyor...`);
 
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000);
+    const timeoutId = setTimeout(() => controller.abort(), 300000);
 
     try {
         const response = await fetch(`${HF_API_BASE_URL}${model}`,
