@@ -440,6 +440,7 @@ const NotebookPage = () => {
                                         <p className="text-heading/70 mt-2">Created by {notebook.owner.username}</p>
                                         <section className="mt-6">
                                             <p className="text-heading/90 leading-relaxed">{notebook.description}</p>
+                                            <p className="text-heading/90 leading-relaxed">{notebook.summary}</p>
                                         </section>
                                     </div>
                                     <div className="flex-1 flex items-center justify-center p-8">

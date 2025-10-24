@@ -1,6 +1,6 @@
 import Document from "../models/Document.model.js"
 import { processDocument } from '../services/document.processor.js'
-import { getEmbeddings } from '../services/ai.service.js'
+import { getEmbeddings, generateSummary } from '../services/ai.service.js'
 import { addVectors } from '../services/vector.service.js'
 import Notebook from '../models/Notebook.model.js';
 import iconv from 'iconv-lite';
@@ -64,7 +64,14 @@ export const uploadDocument = async (req, res, next) => {
 
             document.status = 'ready';
             document.vectorTableName = tableName;
+
+            const fullText = chunks.join('')
+            const docSummary = await generateSummary(fullText)
+            document.summary = docSummary
+
+
             await document.save();
+
         } catch (processingError) {
             // If processing fails, delete the created document
             await Document.findByIdAndDelete(document._id);
@@ -72,7 +79,10 @@ export const uploadDocument = async (req, res, next) => {
         }
 
 
+
         notebook.associatedDocuments.push(document._id);
+        notebook.summary = (notebook.summary || '') + `\n\n--- ${document.fileName} ---\n` + (document.summary || '')
+
         await notebook.save();
 
         res.status(201).json({ success: true, data: document });

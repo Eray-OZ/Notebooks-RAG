@@ -111,3 +111,17 @@ Kullanıcı Sorusu: ${userPrompt}`
 
     return generateContent(prompt)
 }
+
+
+
+
+
+export const generateSummary = async (context) => {
+    const prompt = `Aşağıdaki metni kısa ve öz bir şekilde, anahtar noktalarını vurgulayarak özetle:
+    
+    --- Metin ---
+    ${context}
+    --- Bitti ---`
+
+    return generateContent(prompt)
+}

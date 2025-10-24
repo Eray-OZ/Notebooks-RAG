@@ -40,7 +40,7 @@ export const associatedDocument = async (req, res, next) => {
 
         const [notebook, document] = await Promise.all([
             Notebook.findById(notebookId),
-            Document.findById(documentId)
+            Document.findById(documentId).select("+summary +fileName")
         ])
 
 
@@ -60,18 +60,31 @@ export const associatedDocument = async (req, res, next) => {
         }
 
 
+        const isAlreadyAssociated = notebook.associatedDocuments.some(
+            docId => docId.toString() === documentId // documentId zaten string olmalı ama garanti olsun
+        );
 
-        const updatedNotebook = await Notebook.findByIdAndUpdate(
-            notebookId,
-            {
-                $addToSet: {
-                    associatedDocuments: documentId
-                }
-            },
-            {
-                new: true, runValidators: true
-            }
-        ).populate('associatedDocuments')
+
+        if (!isAlreadyAssociated) {
+            console.log(`[Backend] Belge ilişkilendiriliyor: ${document.fileName} -> ${notebook.title}`);
+            // Belge ID'sini diziye ekle
+            notebook.associatedDocuments.push(documentId);
+
+            // Belgenin özetini notebook'un genel özetine ekle (Ayırıcılarla)
+            notebook.summary = (notebook.summary || '') + `\n\n--- ${document.fileName} ---\n` + (document.summary || 'Özet bulunamadı.');
+
+            // Notebook'u güncellenmiş haliyle kaydet
+            await notebook.save();
+            console.log(`[Backend] Özet eklendi.`);
+        } else {
+            console.log(`[Backend] Belge zaten ilişkilendirilmiş: ${document.fileName} -> ${notebook.title}`);
+            // Zaten ilişkiliyse bir şey yapmaya gerek yok, özet zaten eklenmiş olmalı.
+        }
+
+
+
+        const updatedNotebook = await Notebook.findById(notebookId)
+            .populate('associatedDocuments');
 
 
         res.status(200).json({ success: true, data: updatedNotebook })
@@ -283,16 +296,11 @@ export const getNotebookById = async (req, res, next) => {
 
 
 export const getNotebookPreviewById = async (req, res, next) => {
-
-
-
-
-
     try {
 
         const { notebookId } = req.params
         const notebook = await Notebook.findById(notebookId)
-            .select('title description owner associatedDocuments isPublic createdAt updatedAt likes category')
+            .select('title description owner associatedDocuments isPublic createdAt updatedAt likes category summary')
             .populate('owner', 'username')
             .populate('associatedDocuments', 'fileName status')
 

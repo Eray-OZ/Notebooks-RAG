@@ -49,7 +49,11 @@ const NotebookSchema = new mongoose.Schema({
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
-    }]
+    }],
+    summary: {
+        type: String,
+        default: ''
+    }
 }, { timestamps: true })
 
 export default mongoose.model('Notebook', NotebookSchema)
