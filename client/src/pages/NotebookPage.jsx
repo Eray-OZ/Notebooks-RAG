@@ -6,10 +6,20 @@ import {
     postMessageToNotebook,
     associatedDocumentToNotebook,
     getMyDocuments,
-    getNotebookPreviewById
+    getNotebookPreviewById,
+    updateNotebook
 } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/NotebookPage.css';
+
+const getFileIcon = (fileName) => {
+    if (fileName.endsWith('.pdf')) return 'picture_as_pdf';
+    if (fileName.endsWith('.txt')) return 'article';
+    if (fileName.endsWith('.md')) return 'article';
+    if (fileName.endsWith('.fig')) return 'palette';
+    if (fileName.endsWith('.xlsx')) return 'table_chart';
+    return 'description';
+};
 
 const NotebookPage = () => {
     const { notebookId } = useParams();
@@ -37,6 +47,7 @@ const NotebookPage = () => {
     const [associateError, setAssociateError] = useState('')
     const [associatingDocId, setAssociatingDocId] = useState(null)
     const [selectedDocuments, setSelectedDocuments] = useState([]);
+
 
     const handleCheckboxChange = (docId) => {
         setSelectedDocuments(prevSelected => {
@@ -272,13 +283,12 @@ const NotebookPage = () => {
                                 {(loading && !notebook.associatedDocuments?.length) && <li className="document-item">Güncelleniyor...</li>}
                                 {!loading && (!notebook.associatedDocuments || notebook.associatedDocuments.length === 0) ? (
                                     <li className="document-item">
-                                        <p className="no-documents">Henüz belge yüklenmemiş.</p>
+                                        <p className="no-documents">No Document.</p>
                                     </li>
                                 ) : (
                                     notebook.associatedDocuments.map((doc, index) => (
                                         <li key={doc._id || index} className={`document-item ${index === 0 ? 'active' : ''}`}>
-                                            <span className="material-symbols-outlined document-icon">description</span>
-                                            <div className="document-info">
+                                            <span className="material-symbols-outlined">{getFileIcon(doc.fileName)}</span>                                            <div className="document-info">
                                                 <div className="document-title">{doc.fileName}</div>
                                                 <div className="document-status">
                                                     <span className={`status-indicator ${doc.status === 'ready' || doc.status === 'completed' ? 'ready' : doc.status === 'processing' || doc.status === 'uploading' ? 'processing' : 'error'}`}></span>
@@ -312,6 +322,7 @@ const NotebookPage = () => {
                                                     type="checkbox"
                                                     checked={selectedDocuments.includes(doc._id)}
                                                     onChange={() => handleCheckboxChange(doc._id)}
+                                                    className="mr-2"
                                                 />
                                                 <span>{truncateText(doc.fileName, 28)}</span>
                                             </li>
@@ -390,7 +401,59 @@ const NotebookPage = () => {
                         </main>
                     </div>
                 </div>) : (
-                <div></div>
+                <body className="bg-page-bg font-display text-heading">
+                    <div className="flex h-screen w-full p-6 md:p-8 lg:p-10">
+                        <div className="flex w-full max-w-7xl mx-auto bg-panel-bg rounded-xl shadow-sm overflow-hidden">
+                            <aside className="w-full max-w-sm flex-shrink-0 flex flex-col border-r border-black/5">
+                                <div className="p-6">
+                                    <h3
+                                        className="flex items-center gap-3 text-heading text-lg font-bold leading-tight tracking-tight mb-4">
+                                        <span className="material-symbols-outlined text-accent-teal">attachment</span>
+                                        Associated Documents
+                                    </h3>
+                                    <div className="flex flex-col gap-2">
+                                        {notebook.associatedDocuments && notebook.associatedDocuments.map(doc => (
+                                            <div
+                                                key={doc._id}
+                                                className="flex items-center gap-4 bg-white/50 hover:bg-white/80 transition-colors duration-200 rounded-lg p-3 cursor-pointer">
+                                                <div className="flex items-center gap-4 flex-1">
+                                                    <div
+                                                        className="text-accent-teal flex items-center justify-center rounded-lg bg-accent-teal/10 shrink-0 size-10">
+                                                        <span className="material-symbols-outlined">{getFileIcon(doc.fileName)}</span>
+                                                    </div>
+                                                    <p className="text-heading text-base font-normal leading-normal flex-1 truncate">{doc.fileName}</p>
+                                                </div>
+                                                <div className="shrink-0">
+                                                    <div className="text-heading/50 flex size-7 items-center justify-center">
+                                                        <span className="material-symbols-outlined">chevron_right</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </aside>
+                            <main className="flex-1 flex flex-col bg-page-bg/50">
+                                <div className="flex flex-col h-full">
+                                    <div className="p-8 border-b border-black/5">
+                                        <h1 className="text-heading text-4xl font-bold">{notebook.name}</h1>
+                                        <p className="text-heading/70 mt-2">Created by {notebook.owner.username}</p>
+                                        <section className="mt-6">
+                                            <p className="text-heading/90 leading-relaxed">{notebook.description}</p>
+                                        </section>
+                                    </div>
+                                    <div className="flex-1 flex items-center justify-center p-8">
+                                        <div
+                                            className="bg-white rounded-xl shadow-md p-8 flex flex-col items-center gap-4 text-center max-w-md">
+                                            <span className="material-symbols-outlined text-5xl text-gray-400">lock</span>
+                                            <p className="text-gray-600 text-lg">Chat history is only visible to the owner</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </main>
+                        </div>
+                    </div>
+                </body>
             )}
         </div>
     );

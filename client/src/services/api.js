@@ -186,4 +186,16 @@ export const getNotebookPreviewById = async (notebookId) => {
 
 
 
+
+export const updateNotebook = async (notebookId, updateData) => {
+    try {
+        const response = await api.patch(`/notebook/${notebookId}`, updateData)
+        return response.data
+    } catch (error) {
+        handleApiError(error, 'updateNotebook')
+    }
+}
+
+
+
 export default api

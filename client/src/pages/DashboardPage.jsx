@@ -58,9 +58,8 @@ const DashboardPage = () => {
                 <div style={{ margin: '1rem 0' }}>
                     <button
                         onClick={() => setIsModalOpen(true)}
-                        style={{ padding: '0.5rem 1rem', background: 'green', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
-                    >
-                        + Yeni Notebook Oluştur
+                        style={{ padding: '0.5rem 1rem', background: 'green', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+                        New Notebook
                     </button>
                 </div>
 
