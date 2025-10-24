@@ -8,7 +8,8 @@ import {
     getNotebookById,
     likeNotebook,
     updateNotebook,
-    associatedDocument
+    associatedDocument,
+    getNotebookPreviewById
 } from '../controllers/notebook.controller.js';
 import { protect } from '../middlewares/auth.middleware.js';
 import { uploadDocument } from '../controllers/document.controller.js';
@@ -18,15 +19,12 @@ const router = express.Router();
 
 
 router.get('/public', getPublicNotebooks);
-
 router.use(protect);
-
 router.get('/mynotebooks', getMyNotebooks);
-
+router.get('/:notebookId/preview', getNotebookPreviewById)
 router.get('/:notebookId', getNotebookById);
 
 router.patch('/:notebookId/associate', associatedDocument)
-
 router.post('/', createNotebook);
 router.post('/:notebookId/messages', postMessageToNotebook);
 router.patch('/:notebookId/like', likeNotebook);

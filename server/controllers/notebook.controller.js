@@ -276,4 +276,45 @@ export const getNotebookById = async (req, res, next) => {
         console.error(`[Backend] Error in getNotebookById for ID: ${req.params.notebookId}`, error);
         next(error);
     }
-};
+}
+
+
+
+
+
+export const getNotebookPreviewById = async (req, res, next) => {
+
+
+
+
+
+    try {
+
+        const { notebookId } = req.params
+        const notebook = await Notebook.findById(notebookId)
+            .select('title description owner associatedDocuments isPublic createdAt updatedAt likes category')
+            .populate('owner', 'username')
+            .populate('associatedDocuments', 'fileName status')
+
+
+        if (!notebook) {
+            console.log("Notebook Not Found: " + notebookId)
+            res.status(404)
+            throw new Error('Notebook Not Foun')
+        }
+
+
+        if (!notebook.isPublic && notebook.owner._id.toString() !== req.user._id.toString()) {
+            console.log("Not Authorized")
+            res.status(403)
+            throw new Error("Not Authorized")
+        }
+
+
+        res.status(200).json({ success: true, data: notebook })
+
+    } catch (error) {
+        next(error)
+    }
+
+}

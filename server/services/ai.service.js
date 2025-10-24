@@ -5,54 +5,63 @@ import config from '../config/index.js';
 const HF_API_BASE_URL = "https://api-inference.huggingface.co/models/";
 
 
-export const getEmbeddings = async (textChunks) => {
+export const getEmbeddings = async (textChunks, batchSize = 100) => {
     const model = "intfloat/multilingual-e5-large";
-    console.log(`Embedding alınıyor...`);
+    console.log(`Embedding alınıyor... Toplam ${textChunks.length} chunk, ${batchSize} boyutunda batchler halinde işlenecek.`);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 300000);
+    const allEmbeddings = [];
 
-    try {
-        const response = await fetch(`${HF_API_BASE_URL}${model}`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${config.hfToken}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ inputs: textChunks }),
-                signal: controller.signal,
+    for (let i = 0; i < textChunks.length; i += batchSize) {
+        const batch = textChunks.slice(i, i + batchSize);
+        console.log(`Batch ${Math.floor(i / batchSize) + 1} işleniyor...`);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 600000);
+
+        try {
+            const response = await fetch(`${HF_API_BASE_URL}${model}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${config.hfToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ inputs: batch }),
+                    signal: controller.signal,
+                }
+            );
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("--- HUGGING FACE'DEN GELEN HAM HATA ---", errorText);
+                throw new Error(`Hugging Face API hatası: ${response.status} ${response.statusText} - ${errorText}`);
             }
-        );
 
-        clearTimeout(timeoutId);
+            const result = await response.json();
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("--- HUGGING FACE'DEN GELEN HAM HATA ---", errorText);
-            throw new Error(`Hugging Face API hatası: ${response.status} ${response.statusText} - ${errorText}`);
+            if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
+                allEmbeddings.push(...result);
+            } else {
+                console.error("Hugging Face'den beklenmedik çıktı formatı:", result);
+                throw new Error("Hugging Face modelinden geçersiz embedding formatı alındı.");
+            }
+
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                console.error("Hugging Face API isteği zaman aşımına uğradı (600 saniye).");
+                throw new Error("İstek zaman aşımına uğradı.");
+            }
+            console.error("--- HUGGING FACE API İSTEĞİNDE BEKLENMEDİK HATA ---", error);
+            throw error;
         }
-
-        const result = await response.json();
-
-        if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
-            console.log("Tüm embedding işlemleri başarıyla tamamlandı.");
-            return result;
-        } else {
-            console.error("Hugging Face'den beklenmedik çıktı formatı:", result);
-            throw new Error("Hugging Face modelinden geçersiz embedding formatı alındı.");
-        }
-
-    } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-            console.error("Hugging Face API isteği zaman aşımına uğradı (120 saniye).");
-            throw new Error("İstek zaman aşımına uğradı.");
-        }
-        console.error("--- HUGGING FACE API İSTEĞİNDE BEKLENMEDİK HATA ---", error);
-        throw error;
     }
-}
+
+    console.log("Tüm embedding işlemleri başarıyla tamamlandı.");
+    return allEmbeddings;
+};
 
 
 

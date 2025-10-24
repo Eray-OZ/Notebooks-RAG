@@ -29,6 +29,7 @@ api.interceptors.request.use(
 
 const handleApiError = (error, functionName = 'API function') => {
     console.error(`API Error details in ${functionName}:`, error); // Hatanın tamamını logla
+    console.error(`Full error response:`, error.response); // Log the full response
 
     if (error.response) {
         throw error.response.data; // Backend'in { success: false, message: '...' } objesini fırlat
@@ -172,6 +173,16 @@ export const associatedDocumentToNotebook = async (notebookId, documentId) => {
     }
 }
 
+
+
+export const getNotebookPreviewById = async (notebookId) => {
+    try {
+        const response = await api.get(`/notebooks/${notebookId}/preview`)
+        return response.data
+    } catch (error) {
+        handleApiError(error, 'getNotebookPreviewByID')
+    }
+}
 
 
 

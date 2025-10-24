@@ -58,7 +58,7 @@ export const uploadDocument = async (req, res, next) => {
 
         try {
             const chunks = await processDocument(req.file.path, req.file.mimetype);
-            const embeddings = await getEmbeddings(chunks);
+            const embeddings = await getEmbeddings(chunks, 100);
             const tableName = `doc_${document._id.toString()}`;
             await addVectors(tableName, chunks, embeddings);
 
