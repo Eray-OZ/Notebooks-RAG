@@ -72,7 +72,10 @@ const DashboardPage = () => {
                             <div className={`notebook-card color-${(index % 5) + 1}`} key={notebook._id}>
                                 <div className="card-header">
                                     <h2 className="notebook-title">{notebook.title}</h2>
-                                    <p className="notebook-author">by {notebook.owner.username}</p>
+                                    {notebook.clonedFrom ? (
+                                        <p className="notebook-author">by {notebook.clonedFrom}</p>
+                                    ) : (<p className="notebook-author">by {notebook.owner.username}</p>)}
+
                                 </div>
                                 <div className="card-body">
 

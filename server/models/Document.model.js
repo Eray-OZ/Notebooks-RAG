@@ -24,7 +24,7 @@ const DocumentSchema = new mongoose.Schema({
     summary: {
         type: String,
         default: ''
-    }
+    },
 }, { timestamps: true })
 
 

@@ -298,6 +298,20 @@ body {
     text-decoration: none;
 }
 
+.clone-button {
+    display: inline-flex;
+    color: white;
+    background-color: var(--accent-color-4);
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
 .notebook-card.color-1 .view-button {
     background-color: var(--primary-color);
 }
@@ -329,18 +343,21 @@ body {
 /* --- Fixed Header Styles --- */
 .fixed-header-wrapper {
     position: fixed;
-    top: 4.5rem; /* Position below the main navbar */
+    top: 4.5rem;
+    /* Position below the main navbar */
     left: 0;
     right: 0;
     background-color: var(--background-light);
-    z-index: 19; /* Lower than navbar's z-index (20), higher than content (10) */
+    z-index: 19;
+    /* Lower than navbar's z-index (20), higher than content (10) */
     padding-top: 1rem;
     border-bottom: 1px solid var(--border-light);
 }
 
 .fixed-header-inner {
     width: 100%;
-    max-width: 64rem; /* To align with the content below */
+    max-width: 64rem;
+    /* To align with the content below */
     margin: 0 auto;
     padding-left: 1rem;
     padding-right: 1rem;
@@ -352,6 +369,7 @@ body {
         padding-right: 1.5rem;
     }
 }
+
 @media (min-width: 1024px) {
     .fixed-header-inner {
         padding-left: 2rem;
@@ -360,7 +378,8 @@ body {
 }
 
 .scrollable-content {
-    padding-top: 300px; /* Adjust if header height changes */
+    padding-top: 300px;
+    /* Adjust if header height changes */
 }
 
 .fixed-header-inner .search-area {

@@ -44,7 +44,7 @@ const NotebookSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        enum: ["Study"]
+        enum: ["General", "Technology", "Others", "History"]
     },
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -53,6 +53,10 @@ const NotebookSchema = new mongoose.Schema({
     summary: {
         type: String,
         default: ''
+    },
+    clonedFrom: {
+        type: String,
+        default: null
     }
 }, { timestamps: true })
 

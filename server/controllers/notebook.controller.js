@@ -388,3 +388,49 @@ export const getPublicNotebooksByCategory = async (req, res, next) => {
         next(error);
     }
 };
+
+
+
+
+
+export const cloneNotebook = async (req, res, next) => {
+    const originalNotebookId = req.params.notebookId;
+    const clonerUserId = req.user._id;
+    console.log(`[Backend] Clone requested for Notebook ID: ${originalNotebookId} by User ID: ${clonerUserId}`);
+
+    try {
+        const originalNotebook = await Notebook.findById(originalNotebookId)
+            .populate('owner', 'username')
+            .select('title description category owner associatedDocuments summary isPublic');
+
+        if (!originalNotebook) {
+            res.status(404);
+            throw new Error('Klonlanacak notebook bulunamadı');
+        }
+        if (!originalNotebook.isPublic) {
+            res.status(403);
+            throw new Error('Sadece herkese açık notebooklar klonlanabilir.');
+        }
+        const originalOwnerUsername = originalNotebook.owner?.username || 'Bilinmeyen Kullanıcı';
+
+        const clonedNotebook = await Notebook.create({
+            title: `${originalNotebook.title} (Clone)`,
+            description: originalNotebook.description,
+            category: originalNotebook.category,
+            owner: clonerUserId,
+            associatedDocuments: originalNotebook.associatedDocuments,
+            messages: [],
+            summary: originalNotebook.summary,
+            isPublic: false,
+            clonedFrom: originalOwnerUsername,
+            likes: [],
+        });
+
+        console.log(`[Backend] Notebook cloned successfully from ${originalOwnerUsername}. New ID: ${clonedNotebook._id}`);
+        res.status(201).json({ success: true, data: clonedNotebook });
+
+    } catch (error) {
+        console.error(`[Backend] Error cloning notebook ID ${originalNotebookId}:`, error);
+        next(error);
+    }
+}

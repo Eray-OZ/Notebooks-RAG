@@ -224,4 +224,16 @@ export const getPublicNotebooksByCategory = async (categoryName) => {
 
 
 
+
+export const cloneNotebook = async (notebookId) => {
+    try {
+        const response = await api.post(`/notebooks/${notebookId}/clone`)
+        return response.data
+    } catch (error) {
+        handleApiError(error, 'cloneNotebook')
+    }
+}
+
+
+
 export default api

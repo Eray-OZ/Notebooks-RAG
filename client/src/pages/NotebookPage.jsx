@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     getNotebookById,
     uploadDocumentToNotebook,
@@ -7,7 +7,8 @@ import {
     associatedDocumentToNotebook,
     getMyDocuments,
     getNotebookPreviewById,
-    updateNotebook
+    updateNotebook,
+    cloneNotebook
 } from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/NotebookPage.css';
@@ -49,6 +50,32 @@ const NotebookPage = () => {
     const [associatingDocId, setAssociatingDocId] = useState(null)
     const [selectedDocuments, setSelectedDocuments] = useState([]);
 
+
+    const [isCloning, setIsCloning] = useState(false);
+    const [cloneError, setCloneError] = useState('')
+
+
+    const navigate = useNavigate()
+
+
+    const handleClone = async () => {
+        if (isCloning || !notebook) return;
+
+        setIsCloning(true);
+        setCloneError('');
+        try {
+            const response = await cloneNotebook(notebook._id);
+            console.log("Notebook Klonlandı:", response.data);
+            alert(`'${notebook.title} (Kopya)' başarıyla kütüphanenize eklendi! Dashboard'a yönlendiriliyorsunuz.`);
+            navigate(`/notebook/${response.data._id}`);
+        } catch (err) {
+            setCloneError(`Klonlama sırasında hata: ${err.message}`);
+            alert(`Klonlama sırasında hata: ${err.message}`);
+            console.error("handleClone error:", err);
+        } finally {
+            setIsCloning(false);
+        }
+    };
 
     const handleCheckboxChange = (docId) => {
         setSelectedDocuments(prevSelected => {
@@ -232,16 +259,13 @@ const NotebookPage = () => {
 
 
     const truncateText = (text, maxLength) => {
-        // if (!text) return ''
         if (text.length <= maxLength) {
             return text
         }
         return text.substring(0, maxLength) + '...'
     }
 
-    // --- Render Kısmı ---
 
-    // İlk yükleme veya ilk hatayı ele al
     if (loading && !notebook) return <div className="loading">Notebook yükleniyor...</div>;
     if (error && !notebook) return <div className="error">Hata: {error}</div>;
     if (!notebook) return <div className="error">Notebook bulunamadı veya yüklenemedi.</div>;
@@ -432,6 +456,21 @@ const NotebookPage = () => {
                                             </div>
                                         ))}
                                     </div>
+
+                                    {isPreview && (
+
+                                        <button
+                                            className="clone-button header-clone-button"
+                                            onClick={handleClone}
+                                            disabled={isCloning}
+                                            title="Bu notebook'u kütüphanene kopyala"
+                                            style={{ marginTop: 10 }}
+                                        >
+                                            <span className="material-symbols-outlined">content_copy</span>
+                                            {isCloning ? 'Klonlanıyor...' : 'Klonla'}
+                                        </button>
+                                    )}
+
                                 </div>
                             </aside>
                             <main className="flex-1 flex flex-col bg-page-bg/50 overflow-y-auto">
@@ -455,6 +494,7 @@ const NotebookPage = () => {
                                                 )}
                                             </section>
                                         )}
+
                                     </div>
                                     {/* <div className="flex-1 flex items-center justify-center p-8">
                                         <div

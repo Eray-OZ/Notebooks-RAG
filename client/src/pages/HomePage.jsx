@@ -1,59 +1,69 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-// --- Gerekli API fonksiyonlarını import et ---
+import { Link, useNavigate } from 'react-router-dom';
 import {
-    getPublicNotebooks,          // Tüm public olanlar için
-    searchPublicNotebooks,       // Metin araması için (kategorisiz)
-    getPublicNotebooksByCategory // Kategoriye göre filtrelemek için
+    getPublicNotebooks,
+    searchPublicNotebooks,
+    getPublicNotebooksByCategory,
+    cloneNotebook
 } from '../services/api';
-import '../styles/HomePage.css'; // Stil dosyanı import etmeyi unutma
+import '../styles/HomePage.css';
 
-// --- Yardımcı Kısaltma Fonksiyonu ---
 const truncateText = (text = '', maxLength = 100) => {
     if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
 };
-// --- Bitti ---
 
 
 const HomePage = () => {
-    const [notebooks, setNotebooks] = useState([]);
-    // --- İki farklı loading state kullanalım ---
-    const [initialLoading, setInitialLoading] = useState(true); // Sadece ilk yükleme
-    const [isLoading, setIsLoading] = useState(false); // Arama veya filtreleme sırasındaki yükleme
-    // --- Bitti ---
-    const [error, setError] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
-    const searchTimeoutRef = useRef(null);
-    // --- Kategori State'i ---
-    const [selectedCategory, setSelectedCategory] = useState(''); // Seçili kategori (boş = hepsi)
-    const predefinedCategories = ['Technology', 'History', 'General', 'Others']; // Örnek kategoriler
-    // --- Bitti ---
+    const [notebooks, setNotebooks] = useState([])
+    const [initialLoading, setInitialLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState('')
+    const [searchTerm, setSearchTerm] = useState('')
+    const searchTimeoutRef = useRef(null)
+    const [selectedCategory, setSelectedCategory] = useState('')
+    const predefinedCategories = ['Technology', 'History', 'General', 'Others']
+    const [cloningId, setCloningId] = useState(null)
+    const [cloneError, setCloneError] = useState('')
+
+    const navigate = useNavigate()
 
 
-    // --- useEffect (Arama ve Kategori Mantığı ile Güncellendi) ---
+    const handleClone = async (idToClone, titleToClone) => {
+        if (cloningId) return;
+
+        setCloningId(idToClone);
+        setCloneError('');
+        try {
+            const response = await cloneNotebook(idToClone);
+            console.log("Notebook Klonlandı:", response.data);
+            navigate(`/notebook/${response.data._id}`);
+        } catch (err) {
+            setCloneError(`Klonlama sırasında hata: ${err.message}`);
+            alert(`Klonlama sırasında hata: ${err.message}`);
+            console.error("handleClone error:", err);
+        } finally {
+            setCloningId(null);
+        }
+    };
+
+
     useEffect(() => {
         const performFetchOrSearch = async () => {
             setError('');
-            // İlk yükleme değilse normal loading'i başlat
             if (!initialLoading) setIsLoading(true);
 
             try {
                 let response;
-                // 1. Arama terimi var mı? (Metin araması öncelikli)
                 if (searchTerm.trim() !== '') {
                     console.log(`[Frontend] Searching for: "${searchTerm}"`);
-                    // Sadece metin araması yapan API'yi çağır
                     response = await searchPublicNotebooks(searchTerm);
                 }
-                // 2. Arama terimi yoksa, Kategori seçili mi?
                 else if (selectedCategory) {
                     console.log(`[Frontend] Fetching category: "${selectedCategory}"`);
-                    // Yeni kategori endpoint'ini çağır
                     response = await getPublicNotebooksByCategory(selectedCategory);
                 }
-                // 3. İkisi de yoksa, TÜM public olanları getir.
                 else {
                     console.log("[Frontend] Fetching all public notebooks...");
                     // Kategori parametresi olmayan public endpoint'ini çağır
@@ -159,6 +169,17 @@ const HomePage = () => {
                                             <span className="material-symbols-outlined likes-icon">favorite</span>
                                             <span>{notebook.likes?.length || 0}</span>
                                         </div>
+
+                                        <button
+                                            className="clone-button"
+                                            onClick={() => handleClone(notebook._id, notebook.title)}
+                                            disabled={cloningId === notebook._id || (cloningId !== null && cloningId !== notebook._id)}
+                                            style={{ marginLeft: '75px' }}
+                                            title="Bu notebook'u kütüphanene kopyala"
+                                        >
+                                            {cloningId === notebook._id ? 'Klonlanıyor...' : 'Klonla'}
+                                        </button>
+
                                         <Link className="view-button" to={`/notebook/${notebook._id}`}>İncele</Link>
                                     </div>
                                 </div>
