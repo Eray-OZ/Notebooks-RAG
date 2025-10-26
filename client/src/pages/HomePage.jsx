@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { getPublicNotebooks } from '../services/api';
+import { getPublicNotebooks, searchPublicNotebooks } from '../services/api';
 import '../styles/HomePage.css';
 
 const HomePage = () => {
@@ -8,21 +8,51 @@ const HomePage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        const fetchNotebooks = async () => {
-            try {
-                setLoading(true);
-                const response = await getPublicNotebooks();
-                setNotebooks(response.data);
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const [searchTerm, setSearchTerm] = useState('')
+    const searchTimeoutRef = useRef(null)
 
-        fetchNotebooks();
-    }, []);
+
+    useEffect(() => {
+        const performSearch = async () => {
+            setError('')
+            setLoading(true)
+
+            try {
+                let response
+
+                if (searchTerm.trim() === "") {
+                    response = await getPublicNotebooks()
+                } else {
+                    response = await searchPublicNotebooks(searchTerm)
+                }
+
+                setNotebooks(response.data || [])
+
+            } catch (err) {
+                setError(err.message)
+                setNotebooks([])
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current)
+        }
+
+        searchTimeoutRef.current = setTimeout(() => {
+            performSearch()
+        }, 500)
+
+
+        return () => {
+            if (searchTimeoutRef.current) {
+                clearTimeout(searchTimeoutRef.current)
+
+            }
+        }
+
+    }, [searchTerm]);
 
     if (loading) {
         return <div className="loading-container">Loading...</div>;
@@ -38,6 +68,13 @@ const HomePage = () => {
                 <div className="header">
                     <h1 className="title">Notebooks</h1>
                     <p className="subtitle">Explore and discover amazing notebooks from our community.</p>
+                </div>
+
+                <div>
+                    <input type='search'
+                        placeholder='Title, description or summary...'
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)} />
                 </div>
 
                 {notebooks.length === 0 ? (

@@ -9,7 +9,8 @@ import {
     likeNotebook,
     updateNotebook,
     associatedDocument,
-    getNotebookPreviewById
+    getNotebookPreviewById,
+    searchPublicNotebooks
 } from '../controllers/notebook.controller.js';
 import { protect } from '../middlewares/auth.middleware.js';
 import { uploadDocument } from '../controllers/document.controller.js';
@@ -19,6 +20,7 @@ const router = express.Router();
 
 
 router.get('/public', getPublicNotebooks);
+router.get('/search/public', searchPublicNotebooks)
 router.use(protect);
 router.get('/mynotebooks', getMyNotebooks);
 router.get('/:notebookId/preview', getNotebookPreviewById)

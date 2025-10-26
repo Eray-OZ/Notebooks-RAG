@@ -198,4 +198,18 @@ export const updateNotebook = async (notebookId, updateData) => {
 
 
 
+export const searchPublicNotebooks = async (query) => {
+    try {
+        const response = await api.get('/notebooks/search/public',
+            {
+                params: { q: query }
+            }
+        )
+        return response.data
+    } catch (error) {
+        handleApiError(error, searchPublicNotebooks)
+    }
+}
+
+
 export default api

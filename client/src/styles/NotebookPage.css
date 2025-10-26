@@ -429,3 +429,41 @@
     align-items: center;
     gap: 0.5rem;
 }
+
+/* Summary Card Styles */
+.summary-card {
+    margin-top: 1.5rem; /* 24px */
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 0.75rem; /* 12px */
+    padding: 1rem; /* 16px */
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.summary-title {
+    font-size: 1.125rem; /* 18px */
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem; /* 12px */
+}
+
+.summary-content {
+    font-size: 0.95rem; /* 15px */
+    color: var(--text-light);
+    line-height: 1.6;
+    white-space: pre-wrap; /* Satır sonlarını ve boşlukları korur */
+}
+
+.summary-toggle-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 0.75rem; /* 12px */
+    font-size: 0.9rem;
+}
+
+.summary-toggle-button:hover {
+    text-decoration: underline;
+}

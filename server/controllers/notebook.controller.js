@@ -326,3 +326,37 @@ export const getNotebookPreviewById = async (req, res, next) => {
     }
 
 }
+
+
+
+
+
+export const searchPublicNotebooks = async (req, res, next) => {
+
+    const query = req.query.q
+    if (!query) {
+        return res.status(200).json({ success: true, data: [] })
+    }
+
+    try {
+        const searchQuery = new RegExp(query, "i")
+
+        const notebooks = await Notebook.find({
+            isPublic: true,
+            $or: [
+                { title: searchQuery },
+                { description: searchQuery },
+                { summary: searchQuery }
+            ]
+        })
+            .populate('owner', 'username')
+            .sort({ createdAt: -1 })
+
+        res.status(200).json({ success: true, data: notebooks })
+
+    } catch (error) {
+        next(error)
+    }
+
+
+}

@@ -32,6 +32,7 @@ const NotebookPage = () => {
     // Dosya Yükleme State'leri
     const [selectedFile, setSelectedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
     const [uploadError, setUploadError] = useState('');
     const [uploadWarning, setUploadWarning] = useState('');
 
@@ -433,23 +434,35 @@ const NotebookPage = () => {
                                     </div>
                                 </div>
                             </aside>
-                            <main className="flex-1 flex flex-col bg-page-bg/50">
+                            <main className="flex-1 flex flex-col bg-page-bg/50 overflow-y-auto">
                                 <div className="flex flex-col h-full">
                                     <div className="p-8 border-b border-black/5">
                                         <h1 className="text-heading text-4xl font-bold">{notebook.name}</h1>
                                         <p className="text-heading/70 mt-2">Created by {notebook.owner.username}</p>
                                         <section className="mt-6">
                                             <p className="text-heading/90 leading-relaxed">{notebook.description}</p>
-                                            <p className="text-heading/90 leading-relaxed">{notebook.summary}</p>
                                         </section>
+                                        {notebook.summary && (
+                                            <section className="summary-card">
+                                                <h4 className="summary-title">Summary</h4>
+                                                <p className="summary-content">
+                                                    {isSummaryExpanded ? notebook.summary : `${notebook.summary.substring(0, 250)}...`}
+                                                </p>
+                                                {notebook.summary.length > 250 && (
+                                                    <button onClick={() => setIsSummaryExpanded(!isSummaryExpanded)} className="summary-toggle-button">
+                                                        {isSummaryExpanded ? 'Show Less' : 'Show More'}
+                                                    </button>
+                                                )}
+                                            </section>
+                                        )}
                                     </div>
-                                    <div className="flex-1 flex items-center justify-center p-8">
+                                    {/* <div className="flex-1 flex items-center justify-center p-8">
                                         <div
                                             className="bg-white rounded-xl shadow-md p-8 flex flex-col items-center gap-4 text-center max-w-md">
                                             <span className="material-symbols-outlined text-5xl text-gray-400">lock</span>
                                             <p className="text-gray-600 text-lg">Chat history is only visible to the owner</p>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </main>
                         </div>
