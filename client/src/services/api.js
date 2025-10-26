@@ -235,5 +235,15 @@ export const cloneNotebook = async (notebookId) => {
 }
 
 
+export const likeNotebook = async (notebookId) => {
+    try {
+        const response = await api.patch(`/notebooks/${notebookId}/like`)
+        return response.data
+    } catch (error) {
+
+    }
+}
+
+
 
 export default api

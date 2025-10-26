@@ -192,7 +192,10 @@ export const likeNotebook = async (req, res, next) => {
 
         await notebook.save()
 
-        res.status(200).json({ success: true, data: notebook })
+        const updatedNotebook = await Notebook.findById(notebook._id)
+            .populate('owner', 'username')
+
+        res.status(200).json({ success: true, data: updatedNotebook })
 
     } catch (error) {
         next(error)

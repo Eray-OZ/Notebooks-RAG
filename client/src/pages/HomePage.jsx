@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     getPublicNotebooks,
     searchPublicNotebooks,
     getPublicNotebooksByCategory,
-    cloneNotebook
+    cloneNotebook,
+    likeNotebook
 } from '../services/api';
 import '../styles/HomePage.css';
+import { AuthContext } from '../context/AuthContext'
 
 const truncateText = (text = '', maxLength = 100) => {
     if (!text) return '';
@@ -16,6 +18,7 @@ const truncateText = (text = '', maxLength = 100) => {
 
 
 const HomePage = () => {
+
     const [notebooks, setNotebooks] = useState([])
     const [initialLoading, setInitialLoading] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
@@ -26,8 +29,39 @@ const HomePage = () => {
     const predefinedCategories = ['Technology', 'History', 'General', 'Others']
     const [cloningId, setCloningId] = useState(null)
     const [cloneError, setCloneError] = useState('')
+    const [likingId, setLikingId] = useState(null)
 
     const navigate = useNavigate()
+    const { user } = useContext(AuthContext)
+
+
+    const handleLike = async (notebookId) => {
+        if (!user) {
+            alert("Beğenmek için giriş yapmalısınız.");
+            return;
+        }
+        if (likingId) return
+
+        setLikingId(notebookId)
+
+        try {
+            const response = await likeNotebook(notebookId)
+            const updatedNotebook = response.data
+
+
+            setNotebooks(prevNotebooks =>
+                prevNotebooks.map(nb =>
+                    nb._id === updatedNotebook._id ? updatedNotebook : nb
+                )
+            )
+
+        } catch (err) {
+            console.error("handleLike error:", err)
+            alert(`Beğenme sırasında hata: ${err.message}`)
+        } finally {
+            setLikingId(null);
+        }
+    };
 
 
     const handleClone = async (idToClone, titleToClone) => {
@@ -153,37 +187,60 @@ const HomePage = () => {
                     ) : (
                         // Notebook Listesi
                         <div className="notebooks-grid">
-                            {notebooks.map((notebook, index) => (
-                                <div className={`notebook-card color-${(index % 5) + 1}`} key={notebook._id}>
-                                    <div className="card-header">
-                                        <h2 className="notebook-title">{notebook.title}</h2>
-                                        <p className="notebook-author">by {notebook.owner?.username || 'Bilinmiyor'}</p>
-                                    </div>
-                                    <div className="card-body">
-                                        {notebook.description && <p className="notebook-description">{truncateText(notebook.description, 120)}</p>}
+                            {notebooks.map((notebook, index) => {
+                                // --- Beğenme Kontrolü (MAP İÇİNDE, RETURN'DEN ÖNCE) ---
+                                const isLikedByUser = user && notebook.likes?.includes(user._id);
+                                // --- Bitti ---
 
-                                        {!notebook.description && <p className="notebook-description placeholder">No description provided.</p>}
-                                    </div>
-                                    <div className="card-footer">
-                                        <div className="likes-container">
-                                            <span className="material-symbols-outlined likes-icon">favorite</span>
-                                            <span>{notebook.likes?.length || 0}</span>
+                                // --- MAP İÇİNDEKİ RETURN ---
+                                // Her notebook için bir kart JSX'i döndürür
+                                return (
+                                    <div className={`notebook-card color-${(index % 5) + 1}`} key={notebook._id}>
+                                        <div className="card-header">
+                                            <h2 className="notebook-title">{notebook.title}</h2>
+                                            <p className="notebook-author">by {notebook.owner?.username || 'Bilinmiyor'}</p>
                                         </div>
-
-                                        <button
-                                            className="clone-button"
-                                            onClick={() => handleClone(notebook._id, notebook.title)}
-                                            disabled={cloningId === notebook._id || (cloningId !== null && cloningId !== notebook._id)}
-                                            style={{ marginLeft: '75px' }}
-                                            title="Bu notebook'u kütüphanene kopyala"
-                                        >
-                                            {cloningId === notebook._id ? 'Klonlanıyor...' : 'Klonla'}
-                                        </button>
-
-                                        <Link className="view-button" to={`/notebook/${notebook._id}`}>İncele</Link>
+                                        <div className="card-body">
+                                            {notebook.description ? (
+                                                <p className="notebook-description">
+                                                    {truncateText(notebook.description, 120)}
+                                                </p>
+                                            ) : (
+                                                <p className="notebook-description placeholder">
+                                                    No description provided.
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="card-footer">
+                                            {/* Beğenme Alanı */}
+                                            <div
+                                                className={`likes-container ${isLikedByUser ? 'liked' : ''} ${likingId === notebook._id ? 'liking' : ''}`}
+                                                onClick={() => handleLike(notebook._id)}
+                                                style={{ cursor: user ? 'pointer' : 'not-allowed' }}
+                                                title={user ? (isLikedByUser ? 'Beğeniyi Geri Al' : 'Beğen') : 'Beğenmek için giriş yap'}
+                                            >
+                                                <span className="material-symbols-outlined likes-icon">
+                                                    {likingId === notebook._id ? 'hourglass_top' : (isLikedByUser ? 'favorite' : 'favorite_border')}
+                                                </span>
+                                                <span>{notebook.likes?.length || 0}</span>
+                                            </div>
+                                            <div className="card-actions">
+                                            {/* Klonlama Butonu */}
+                                            <button
+                                                className="clone-button"
+                                                onClick={() => handleClone(notebook._id, notebook.title)}
+                                                disabled={cloningId === notebook._id || (cloningId !== null)}
+                                                title="Bu notebook'u kütüphanene kopyala"
+                                            >
+                                                {cloningId === notebook._id ? 'Klonlanıyor...' : 'Klonla'}
+                                            </button>
+                                            {/* İncele Linki */}
+                                            <Link className="view-button" to={`/notebook/${notebook._id}`}>İncele</Link>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ); // --- MAP İÇİNDEKİ RETURN BİTTİ ---
+                            })}
                         </div>
                     )}
                 </div>
