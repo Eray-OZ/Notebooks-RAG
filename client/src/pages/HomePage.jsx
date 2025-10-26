@@ -91,77 +91,81 @@ const HomePage = () => {
 
     return (
         <div className="container-root">
-            <div className="content-wrapper">
-                <div className="header">
-                    <h1 className="title">Notebookları Keşfet</h1>
-                    <p className="subtitle">Topluluğumuzdaki harika notları ve belgeleri arayın.</p>
-                </div>
+            <div className="fixed-header-wrapper">
+                <div className="fixed-header-inner">
+                    <div className="header">
+                        <h1 className="title">Notebookları Keşfet</h1>
+                        <p className="subtitle">Topluluğumuzdaki harika notları ve belgeleri arayın.</p>
+                    </div>
 
-                {/* Search Area */}
-                <div className="search-area">
-                    <div className="search-container">
-                        <span className="material-symbols-outlined search-icon">search</span>
-                        <input
-                            type="search"
-                            placeholder="Başlık, açıklama veya özette ara..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="search-input"
+                    {/* Search Area */}
+                    <div className="search-area">
+                        <div className="search-container">
+                            <span className="material-symbols-outlined search-icon">search</span>
+                            <input
+                                type="search"
+                                placeholder="Başlık, açıklama veya özette ara..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="search-input"
+                                disabled={isLoading}
+                            />
+                        </div>
+                        <select
+                            className="category-select"
+                            value={selectedCategory}
+                            onChange={(e) => {
+                                setSearchTerm('');
+                                setSelectedCategory(e.target.value);
+                            }}
                             disabled={isLoading}
-                        />
+                        >
+                            <option value="">Tüm Kategoriler</option>
+                            {predefinedCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
+                        </select>
                     </div>
-                    <select
-                        className="category-select"
-                        value={selectedCategory}
-                        onChange={(e) => {
-                            setSearchTerm('');
-                            setSelectedCategory(e.target.value);
-                        }}
-                        disabled={isLoading}
-                    >
-                        <option value="">Tüm Kategoriler</option>
-                        {predefinedCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
-                    </select>
                 </div>
+            </div>
 
-                {/* Hata Mesajı */}
-                {error && <div className="error-container" style={{ color: 'red', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
+            <div className="content-wrapper">
+                <div className="scrollable-content">
+                    {/* Hata Mesajı */}
+                    {error && <div className="error-container" style={{ color: 'red', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
 
-
-
-                {/* Sonuç Yoksa veya Liste Boşsa */}
-                {!isLoading && notebooks.length === 0 ? (
-                    <p className="subtitle" style={{ textAlign: 'center', marginTop: '30px' }}>
-                        {searchTerm
-                            ? `"${searchTerm}" için sonuç bulunamadı.`
-                            : (selectedCategory ? `"${selectedCategory}" kategorisinde notebook bulunamadı.` : "Gösterilecek herkese açık notebook bulunmuyor.")
-                        }
-                    </p>
-                ) : (
-                    // Notebook Listesi
-                    <div className="notebooks-grid">
-                        {notebooks.map((notebook, index) => (
-                            <div className={`notebook-card color-${(index % 5) + 1}`} key={notebook._id}>
-                                <div className="card-header">
-                                    <h2 className="notebook-title">{notebook.title}</h2>
-                                    <p className="notebook-author">by {notebook.owner?.username || 'Bilinmiyor'}</p>
-                                </div>
-                                <div className="card-body">
-                                    {notebook.description && <p className="notebook-description">{truncateText(notebook.description, 120)}</p>}
-
-                                    {!notebook.description && <p className="notebook-description placeholder">No description provided.</p>}
-                                </div>
-                                <div className="card-footer">
-                                    <div className="likes-container">
-                                        <span className="material-symbols-outlined likes-icon">favorite</span>
-                                        <span>{notebook.likes?.length || 0}</span>
+                    {/* Sonuç Yoksa veya Liste Boşsa */}
+                    {!isLoading && notebooks.length === 0 ? (
+                        <p className="subtitle" style={{ textAlign: 'center', marginTop: '30px' }}>
+                            {searchTerm
+                                ? `"${searchTerm}" için sonuç bulunamadı.`
+                                : (selectedCategory ? `"${selectedCategory}" kategorisinde notebook bulunamadı.` : "Gösterilecek herkese açık notebook bulunmuyor.")
+                            }
+                        </p>
+                    ) : (
+                        // Notebook Listesi
+                        <div className="notebooks-grid">
+                            {notebooks.map((notebook, index) => (
+                                <div className={`notebook-card color-${(index % 5) + 1}`} key={notebook._id}>
+                                    <div className="card-header">
+                                        <h2 className="notebook-title">{notebook.title}</h2>
+                                        <p className="notebook-author">by {notebook.owner?.username || 'Bilinmiyor'}</p>
                                     </div>
-                                    <Link className="view-button" to={`/notebook/${notebook._id}`}>İncele</Link>
+                                    <div className="card-body">
+                                        {notebook.description && <p className="notebook-description">{truncateText(notebook.description, 120)}</p>}
+
+                                        {!notebook.description && <p className="notebook-description placeholder">No description provided.</p>}
+                                    </div>
+                                    <div className="card-footer">
+                                        <div className="likes-container">
+                                            <span className="material-symbols-outlined likes-icon">favorite</span>
+                                            <span>{notebook.likes?.length || 0}</span>
+                                        </div>
+                                        <Link className="view-button" to={`/notebook/${notebook._id}`}>İncele</Link>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

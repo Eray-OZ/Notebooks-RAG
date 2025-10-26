@@ -325,3 +325,44 @@ body {
 .view-button:active {
     transform: scale(1);
 }
+
+/* --- Fixed Header Styles --- */
+.fixed-header-wrapper {
+    position: fixed;
+    top: 4.5rem; /* Position below the main navbar */
+    left: 0;
+    right: 0;
+    background-color: var(--background-light);
+    z-index: 19; /* Lower than navbar's z-index (20), higher than content (10) */
+    padding-top: 1rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.fixed-header-inner {
+    width: 100%;
+    max-width: 64rem; /* To align with the content below */
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .fixed-header-inner {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+@media (min-width: 1024px) {
+    .fixed-header-inner {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+.scrollable-content {
+    padding-top: 300px; /* Adjust if header height changes */
+}
+
+.fixed-header-inner .search-area {
+    margin-bottom: 1rem;
+}
