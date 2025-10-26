@@ -95,40 +95,33 @@ const HomePage = () => {
                 <div className="header">
                     <h1 className="title">Notebookları Keşfet</h1>
                     <p className="subtitle">Topluluğumuzdaki harika notları ve belgeleri arayın.</p>
+                </div>
 
-                    {/* --- KATEGORİ FİLTRESİ --- */}
-                    <div style={{ margin: '10px 0 20px 0', textAlign: 'center' }}>
-                        <label htmlFor="categoryFilter" style={{ marginRight: '10px' }}>Kategori:</label>
-                        <select
-                            id="categoryFilter"
-                            value={selectedCategory}
-                            onChange={(e) => {
-                                // Kategori değiştiğinde arama terimini sıfırla
-                                setSearchTerm('');
-                                setSelectedCategory(e.target.value);
-                            }}
-                            style={{ padding: '8px 12px', fontSize: '0.9rem', borderRadius: '5px' }}
-                            disabled={isLoading} // Yüklenirken pasif yap
-                        >
-                            <option value="">Tümü</option>
-                            {predefinedCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
-                        </select>
-                    </div>
-                    {/* --- Bitti --- */}
-
-                    {/* --- ARAMA KUTUSU --- */}
-                    <div className="search-bar-container" style={{ margin: '20px 0' }}>
+                {/* Search Area */}
+                <div className="search-area">
+                    <div className="search-container">
+                        <span className="material-symbols-outlined search-icon">search</span>
                         <input
                             type="search"
-                            placeholder="Başlık, açıklama veya özette ara..." // Özet de arandığı için güncelledim
+                            placeholder="Başlık, açıklama veya özette ara..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="search-input"
-                            style={{ width: '100%', padding: '12px 15px', fontSize: '1rem', borderRadius: '8px', border: '1px solid #ccc' }}
-                            disabled={isLoading} // Yüklenirken pasif yap
+                            disabled={isLoading}
                         />
                     </div>
-                    {/* --- Bitti --- */}
+                    <select
+                        className="category-select"
+                        value={selectedCategory}
+                        onChange={(e) => {
+                            setSearchTerm('');
+                            setSelectedCategory(e.target.value);
+                        }}
+                        disabled={isLoading}
+                    >
+                        <option value="">Tüm Kategoriler</option>
+                        {predefinedCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
+                    </select>
                 </div>
 
                 {/* Hata Mesajı */}
