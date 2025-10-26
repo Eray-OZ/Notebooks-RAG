@@ -4,9 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Modal.css';
 
 const CreateNotebookModal = ({ isOpen, onClose }) => {
-    // State'ler
+
+    const predefinedCategories = ['General', 'Technology', 'History', 'Others'];
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('')
     const [isPublic, setIsPublic] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
@@ -29,17 +32,17 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
 
         try {
             console.log('handleCreate içinde description:', description);
-            const notebookData = { title, description, isPublic };
+            const notebookData = { title, description, isPublic, category: category.trim() || undefined };
             const response = await createNotebook(notebookData);
             const newNotebookId = response.data._id;
 
-            // State'leri sıfırla
+
             setTitle('');
             setDescription('');
             setIsPublic(false);
-
-            onClose(); // Modalı kapat
-            navigate(`/notebook/${newNotebookId}`); // Yönlendir
+            setCategory('');
+            onClose();
+            navigate(`/notebook/${newNotebookId}`);
         } catch (err) {
             setError(err.message || 'Notebook oluşturulurken bir hata oluştu.');
             console.error("CreateNotebookModal error:", err);
@@ -47,19 +50,16 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
         }
     };
 
-    // İptal ve Kapatma fonksiyonu
     const handleClose = () => {
-        // Yükleme sırasında kapatmayı engelle (opsiyonel)
         if (isLoading) return;
-        // State'leri sıfırla
         setTitle('');
         setDescription('');
         setIsPublic(false);
+        setCategory('');
         setError('');
-        onClose(); // Dashboard'daki kapatma fonksiyonunu çağır
+        onClose();
     };
 
-    // Modal JSX yapısı
     return (
         <div className="modal-overlay" onClick={handleClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -95,6 +95,27 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
                         aria-label="Notebook Açıklaması"
                     />
                 </div>
+
+
+                <div className="form-group">
+                    <label className="form-label" htmlFor="notebook-category">Kategori</label>
+                    <select
+                        id="notebook-category"
+                        className="form-input"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        disabled={isLoading}
+                        aria-label="Notebook Kategorisi"
+                    >
+                        <option value="">Kategori Seçin (Opsiyonel)</option>
+                        {predefinedCategories.map(cat => (
+                            <option key={cat} value={cat}>
+                                {cat}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
 
                 <div className="form-checkbox">
                     <input

@@ -207,9 +207,21 @@ export const searchPublicNotebooks = async (query) => {
         )
         return response.data
     } catch (error) {
-        handleApiError(error, searchPublicNotebooks)
+        handleApiError(error, 'searchPublicNotebooks')
     }
 }
+
+
+
+export const getPublicNotebooksByCategory = async (categoryName) => {
+    try {
+        const response = await api.get(`/notebooks/category/${encodeURIComponent(categoryName)}`)
+        return response.data
+    } catch (error) {
+        handleApiError(error, 'getPublicNotebooksByCategory')
+    }
+}
+
 
 
 export default api

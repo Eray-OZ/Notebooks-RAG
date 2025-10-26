@@ -9,14 +9,15 @@ import { searchVectors } from '../services/vector.service.js'
 
 export const createNotebook = async (req, res, next) => {
     try {
-        const { title, description, isPublic } = req.body;
+        const { title, description, isPublic, category } = req.body;
 
         const notebook = await Notebook.create({
             title: title,
             description: description || '',
             owner: req.user._id,
             associatedDocuments: [],
-            isPublic: typeof isPublic === 'boolean' ? isPublic : false
+            isPublic: typeof isPublic === 'boolean' ? isPublic : false,
+            category: category || "Others"
         });
 
         res.status(201).json({ success: true, data: notebook });
@@ -360,3 +361,30 @@ export const searchPublicNotebooks = async (req, res, next) => {
 
 
 }
+
+
+
+
+export const getPublicNotebooksByCategory = async (req, res, next) => {
+    const categoryName = req.params.categoryName;
+
+    if (!categoryName) {
+        res.status(400);
+        return next(new Error('err::: Category Name'));
+    }
+
+    try {
+        const notebooks = await Notebook.find({
+            isPublic: true,
+            category: categoryName
+        })
+            .populate('owner', 'username')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, data: notebooks });
+
+    } catch (error) {
+        console.error(`[Backend] Error fetching notebooks by category "${categoryName}":`, error);
+        next(error);
+    }
+};

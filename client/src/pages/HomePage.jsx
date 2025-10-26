@@ -1,107 +1,169 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { getPublicNotebooks, searchPublicNotebooks } from '../services/api';
-import '../styles/HomePage.css';
+// --- Gerekli API fonksiyonlarını import et ---
+import {
+    getPublicNotebooks,          // Tüm public olanlar için
+    searchPublicNotebooks,       // Metin araması için (kategorisiz)
+    getPublicNotebooksByCategory // Kategoriye göre filtrelemek için
+} from '../services/api';
+import '../styles/HomePage.css'; // Stil dosyanı import etmeyi unutma
+
+// --- Yardımcı Kısaltma Fonksiyonu ---
+const truncateText = (text = '', maxLength = 100) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+};
+// --- Bitti ---
+
 
 const HomePage = () => {
     const [notebooks, setNotebooks] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // --- İki farklı loading state kullanalım ---
+    const [initialLoading, setInitialLoading] = useState(true); // Sadece ilk yükleme
+    const [isLoading, setIsLoading] = useState(false); // Arama veya filtreleme sırasındaki yükleme
+    // --- Bitti ---
     const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const searchTimeoutRef = useRef(null);
+    // --- Kategori State'i ---
+    const [selectedCategory, setSelectedCategory] = useState(''); // Seçili kategori (boş = hepsi)
+    const predefinedCategories = ['Technology', 'History', 'General', 'Others']; // Örnek kategoriler
+    // --- Bitti ---
 
-    const [searchTerm, setSearchTerm] = useState('')
-    const searchTimeoutRef = useRef(null)
 
-
+    // --- useEffect (Arama ve Kategori Mantığı ile Güncellendi) ---
     useEffect(() => {
-        const performSearch = async () => {
-            setError('')
-            setLoading(true)
+        const performFetchOrSearch = async () => {
+            setError('');
+            // İlk yükleme değilse normal loading'i başlat
+            if (!initialLoading) setIsLoading(true);
 
             try {
-                let response
-
-                if (searchTerm.trim() === "") {
-                    response = await getPublicNotebooks()
-                } else {
-                    response = await searchPublicNotebooks(searchTerm)
+                let response;
+                // 1. Arama terimi var mı? (Metin araması öncelikli)
+                if (searchTerm.trim() !== '') {
+                    console.log(`[Frontend] Searching for: "${searchTerm}"`);
+                    // Sadece metin araması yapan API'yi çağır
+                    response = await searchPublicNotebooks(searchTerm);
                 }
-
-                setNotebooks(response.data || [])
-
+                // 2. Arama terimi yoksa, Kategori seçili mi?
+                else if (selectedCategory) {
+                    console.log(`[Frontend] Fetching category: "${selectedCategory}"`);
+                    // Yeni kategori endpoint'ini çağır
+                    response = await getPublicNotebooksByCategory(selectedCategory);
+                }
+                // 3. İkisi de yoksa, TÜM public olanları getir.
+                else {
+                    console.log("[Frontend] Fetching all public notebooks...");
+                    // Kategori parametresi olmayan public endpoint'ini çağır
+                    response = await getPublicNotebooks();
+                }
+                setNotebooks(response.data || []); // Gelen veriyi veya boş dizi ata
             } catch (err) {
-                setError(err.message)
-                setNotebooks([])
+                setError(err.message || 'Notebooklar getirilirken/aranırken bir hata oluştu.');
+                setNotebooks([]); // Hata durumunda listeyi temizle
+                console.error("fetch/search error:", err);
             } finally {
-                setLoading(false)
+                setInitialLoading(false); // İlk yükleme bitti
+                setIsLoading(false);      // Normal yükleme bitti
             }
-        }
+        };
 
-        if (searchTimeoutRef.current) {
-            clearTimeout(searchTimeoutRef.current)
-        }
-
+        // --- Debouncing Mantığı ---
+        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         searchTimeoutRef.current = setTimeout(() => {
-            performSearch()
-        }, 500)
+            performFetchOrSearch(); // API çağrısını gecikmeli yap
+        }, 500); // 500ms bekle
+
+        // Cleanup
+        return () => { if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current); };
+
+    }, [searchTerm, selectedCategory, initialLoading]); // initialLoading'i de ekleyelim ki ilk başta çalışsın
+    // --- useEffect BİTTİ ---
 
 
-        return () => {
-            if (searchTimeoutRef.current) {
-                clearTimeout(searchTimeoutRef.current)
-
-            }
-        }
-
-    }, [searchTerm]);
-
-    if (loading) {
-        return <div className="loading-container">Loading...</div>;
-    }
-
-    if (error) {
-        return <div className="error-container" style={{ color: 'red' }}>{error}</div>;
+    // --- Render Kısmı ---
+    // Sadece İLK YÜKLEME için tam sayfa loading
+    if (initialLoading) {
+        return <div className="loading-container">Sayfa Yükleniyor...</div>;
     }
 
     return (
         <div className="container-root">
             <div className="content-wrapper">
                 <div className="header">
-                    <h1 className="title">Notebooks</h1>
-                    <p className="subtitle">Explore and discover amazing notebooks from our community.</p>
+                    <h1 className="title">Notebookları Keşfet</h1>
+                    <p className="subtitle">Topluluğumuzdaki harika notları ve belgeleri arayın.</p>
+
+                    {/* --- KATEGORİ FİLTRESİ --- */}
+                    <div style={{ margin: '10px 0 20px 0', textAlign: 'center' }}>
+                        <label htmlFor="categoryFilter" style={{ marginRight: '10px' }}>Kategori:</label>
+                        <select
+                            id="categoryFilter"
+                            value={selectedCategory}
+                            onChange={(e) => {
+                                // Kategori değiştiğinde arama terimini sıfırla
+                                setSearchTerm('');
+                                setSelectedCategory(e.target.value);
+                            }}
+                            style={{ padding: '8px 12px', fontSize: '0.9rem', borderRadius: '5px' }}
+                            disabled={isLoading} // Yüklenirken pasif yap
+                        >
+                            <option value="">Tümü</option>
+                            {predefinedCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
+                        </select>
+                    </div>
+                    {/* --- Bitti --- */}
+
+                    {/* --- ARAMA KUTUSU --- */}
+                    <div className="search-bar-container" style={{ margin: '20px 0' }}>
+                        <input
+                            type="search"
+                            placeholder="Başlık, açıklama veya özette ara..." // Özet de arandığı için güncelledim
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="search-input"
+                            style={{ width: '100%', padding: '12px 15px', fontSize: '1rem', borderRadius: '8px', border: '1px solid #ccc' }}
+                            disabled={isLoading} // Yüklenirken pasif yap
+                        />
+                    </div>
+                    {/* --- Bitti --- */}
                 </div>
 
-                <div>
-                    <input type='search'
-                        placeholder='Title, description or summary...'
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)} />
-                </div>
+                {/* Hata Mesajı */}
+                {error && <div className="error-container" style={{ color: 'red', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
 
-                {notebooks.length === 0 ? (
-                    <p className="subtitle">Found No Notebooks</p>
+
+
+                {/* Sonuç Yoksa veya Liste Boşsa */}
+                {!isLoading && notebooks.length === 0 ? (
+                    <p className="subtitle" style={{ textAlign: 'center', marginTop: '30px' }}>
+                        {searchTerm
+                            ? `"${searchTerm}" için sonuç bulunamadı.`
+                            : (selectedCategory ? `"${selectedCategory}" kategorisinde notebook bulunamadı.` : "Gösterilecek herkese açık notebook bulunmuyor.")
+                        }
+                    </p>
                 ) : (
+                    // Notebook Listesi
                     <div className="notebooks-grid">
                         {notebooks.map((notebook, index) => (
                             <div className={`notebook-card color-${(index % 5) + 1}`} key={notebook._id}>
                                 <div className="card-header">
                                     <h2 className="notebook-title">{notebook.title}</h2>
-                                    <p className="notebook-author">by {notebook.owner.username}</p>
+                                    <p className="notebook-author">by {notebook.owner?.username || 'Bilinmiyor'}</p>
                                 </div>
                                 <div className="card-body">
-                                    {notebook.description ? (
-                                        <p className="notebook-description">
-                                            {notebook.description}
-                                        </p>
-                                    ) : (<p className="notebook-description">
-                                        A collection of thoughts, ideas, and research on {notebook.title}.
-                                    </p>)}
+                                    {notebook.description && <p className="notebook-description">{truncateText(notebook.description, 120)}</p>}
+
+                                    {!notebook.description && <p className="notebook-description placeholder">No description provided.</p>}
                                 </div>
                                 <div className="card-footer">
                                     <div className="likes-container">
                                         <span className="material-symbols-outlined likes-icon">favorite</span>
-                                        <span>{notebook.likes.length}</span>
+                                        <span>{notebook.likes?.length || 0}</span>
                                     </div>
-                                    <Link className="view-button" to={`/notebook/${notebook._id}`}>View Notebook</Link>
+                                    <Link className="view-button" to={`/notebook/${notebook._id}`}>İncele</Link>
                                 </div>
                             </div>
                         ))}
