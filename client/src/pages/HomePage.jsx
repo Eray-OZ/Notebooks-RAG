@@ -37,7 +37,7 @@ const HomePage = () => {
 
     const handleLike = async (notebookId) => {
         if (!user) {
-            alert("Beğenmek için giriş yapmalısınız.");
+            alert("You must be logged in to like.");
             return;
         }
         if (likingId) return
@@ -57,7 +57,7 @@ const HomePage = () => {
 
         } catch (err) {
             console.error("handleLike error:", err)
-            alert(`Beğenme sırasında hata: ${err.message}`)
+            alert(`Error while liking: ${err.message}`)
         } finally {
             setLikingId(null);
         }
@@ -71,11 +71,11 @@ const HomePage = () => {
         setCloneError('');
         try {
             const response = await cloneNotebook(idToClone);
-            console.log("Notebook Klonlandı:", response.data);
+            console.log("Notebook Cloned:", response.data);
             navigate(`/notebook/${response.data._id}`);
         } catch (err) {
-            setCloneError(`Klonlama sırasında hata: ${err.message}`);
-            alert(`Klonlama sırasında hata: ${err.message}`);
+            setCloneError(`Error while cloning: ${err.message}`);
+            alert(`Error while cloning: ${err.message}`);
             console.error("handleClone error:", err);
         } finally {
             setCloningId(null);
@@ -100,37 +100,30 @@ const HomePage = () => {
                 }
                 else {
                     console.log("[Frontend] Fetching all public notebooks...");
-                    // Kategori parametresi olmayan public endpoint'ini çağır
                     response = await getPublicNotebooks();
                 }
-                setNotebooks(response.data || []); // Gelen veriyi veya boş dizi ata
+                setNotebooks(response.data || []);
             } catch (err) {
-                setError(err.message || 'Notebooklar getirilirken/aranırken bir hata oluştu.');
-                setNotebooks([]); // Hata durumunda listeyi temizle
+                setError(err.message || 'An error occurred while fetching/searching for notebooks.');
+                setNotebooks([]);
                 console.error("fetch/search error:", err);
             } finally {
-                setInitialLoading(false); // İlk yükleme bitti
-                setIsLoading(false);      // Normal yükleme bitti
+                setInitialLoading(false);
+                setIsLoading(false);
             }
         };
 
-        // --- Debouncing Mantığı ---
         if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
         searchTimeoutRef.current = setTimeout(() => {
-            performFetchOrSearch(); // API çağrısını gecikmeli yap
-        }, 500); // 500ms bekle
+            performFetchOrSearch();
+        }, 500);
 
-        // Cleanup
         return () => { if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current); };
 
-    }, [searchTerm, selectedCategory, initialLoading]); // initialLoading'i de ekleyelim ki ilk başta çalışsın
-    // --- useEffect BİTTİ ---
+    }, [searchTerm, selectedCategory, initialLoading]);
 
-
-    // --- Render Kısmı ---
-    // Sadece İLK YÜKLEME için tam sayfa loading
     if (initialLoading) {
-        return <div className="loading-container">Sayfa Yükleniyor...</div>;
+        return <div className="loading-container">Page Loading...</div>;
     }
 
     return (
@@ -138,17 +131,16 @@ const HomePage = () => {
             <div className="fixed-header-wrapper">
                 <div className="fixed-header-inner">
                     <div className="header">
-                        <h1 className="title">Notebookları Keşfet</h1>
-                        <p className="subtitle">Topluluğumuzdaki harika notları ve belgeleri arayın.</p>
+                        <h1 className="title">Discover Notebooks</h1>
+                        <p className="subtitle">Search for great notes and documents from our community.</p>
                     </div>
 
-                    {/* Search Area */}
                     <div className="search-area">
                         <div className="search-container">
                             <span className="material-symbols-outlined search-icon">search</span>
                             <input
                                 type="search"
-                                placeholder="Başlık, açıklama veya özette ara..."
+                                placeholder="Search in title, description, or summary..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="search-input"
@@ -164,7 +156,7 @@ const HomePage = () => {
                             }}
                             disabled={isLoading}
                         >
-                            <option value="">Tüm Kategoriler</option>
+                            <option value="">All Categories</option>
                             {predefinedCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
                         </select>
                     </div>
@@ -173,32 +165,25 @@ const HomePage = () => {
 
             <div className="content-wrapper">
                 <div className="scrollable-content">
-                    {/* Hata Mesajı */}
                     {error && <div className="error-container" style={{ color: 'red', marginBottom: '15px', textAlign: 'center' }}>{error}</div>}
 
-                    {/* Sonuç Yoksa veya Liste Boşsa */}
                     {!isLoading && notebooks.length === 0 ? (
                         <p className="subtitle" style={{ textAlign: 'center', marginTop: '30px' }}>
                             {searchTerm
-                                ? `"${searchTerm}" için sonuç bulunamadı.`
-                                : (selectedCategory ? `"${selectedCategory}" kategorisinde notebook bulunamadı.` : "Gösterilecek herkese açık notebook bulunmuyor.")
+                                ? `No results found for "${searchTerm}".`
+                                : (selectedCategory ? `No notebooks found in the "${selectedCategory}" category.` : "No public notebooks to display.")
                             }
                         </p>
                     ) : (
-                        // Notebook Listesi
                         <div className="notebooks-grid">
                             {notebooks.map((notebook, index) => {
-                                // --- Beğenme Kontrolü (MAP İÇİNDE, RETURN'DEN ÖNCE) ---
                                 const isLikedByUser = user && notebook.likes?.includes(user._id);
-                                // --- Bitti ---
 
-                                // --- MAP İÇİNDEKİ RETURN ---
-                                // Her notebook için bir kart JSX'i döndürür
                                 return (
                                     <div className={`notebook-card color-${(index % 5) + 1}`} key={notebook._id}>
                                         <div className="card-header">
                                             <h2 className="notebook-title">{notebook.title}</h2>
-                                            <p className="notebook-author">by {notebook.owner?.username || 'Bilinmiyor'}</p>
+                                            <p className="notebook-author">by {notebook.owner?.username || 'Unknown'}</p>
                                         </div>
                                         <div className="card-body">
                                             {notebook.description ? (
@@ -212,12 +197,11 @@ const HomePage = () => {
                                             )}
                                         </div>
                                         <div className="card-footer">
-                                            {/* Beğenme Alanı */}
                                             <div
                                                 className={`likes-container ${isLikedByUser ? 'liked' : ''} ${likingId === notebook._id ? 'liking' : ''}`}
                                                 onClick={() => handleLike(notebook._id)}
                                                 style={{ cursor: user ? 'pointer' : 'not-allowed' }}
-                                                title={user ? (isLikedByUser ? 'Beğeniyi Geri Al' : 'Beğen') : 'Beğenmek için giriş yap'}
+                                                title={user ? (isLikedByUser ? 'Unlike' : 'Like') : 'Login to like'}
                                             >
                                                 <span className="material-symbols-outlined likes-icon">
                                                     {likingId === notebook._id ? 'hourglass_top' : (isLikedByUser ? 'favorite' : 'favorite_border')}
@@ -225,21 +209,19 @@ const HomePage = () => {
                                                 <span>{notebook.likes?.length || 0}</span>
                                             </div>
                                             <div className="card-actions">
-                                            {/* Klonlama Butonu */}
                                             <button
                                                 className="clone-button"
                                                 onClick={() => handleClone(notebook._id, notebook.title)}
                                                 disabled={cloningId === notebook._id || (cloningId !== null)}
-                                                title="Bu notebook'u kütüphanene kopyala"
+                                                title="Copy this notebook to your library"
                                             >
-                                                {cloningId === notebook._id ? 'Klonlanıyor...' : 'Klonla'}
+                                                {cloningId === notebook._id ? 'Cloning...' : 'Clone'}
                                             </button>
-                                            {/* İncele Linki */}
-                                            <Link className="view-button" to={`/notebook/${notebook._id}`}>İncele</Link>
+                                            <Link className="view-button" to={`/notebook/${notebook._id}`}>View</Link>
                                             </div>
                                         </div>
                                     </div>
-                                ); // --- MAP İÇİNDEKİ RETURN BİTTİ ---
+                                );
                             })}
                         </div>
                     )}

@@ -26,18 +26,18 @@ const NotebookPage = () => {
     const { notebookId } = useParams();
     const { user } = useContext(AuthContext);
     const [notebook, setNotebook] = useState(null);
-    const [loading, setLoading] = useState(true); // Genel sayfa yükleme durumu
+    const [loading, setLoading] = useState(true); // General page loading status
     const [error, setError] = useState('');
     const [isPreview, setIsPreview] = useState(false)
 
-    // Dosya Yükleme State'leri
+    // File Upload States
     const [selectedFile, setSelectedFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false);
     const [uploadError, setUploadError] = useState('');
     const [uploadWarning, setUploadWarning] = useState('');
 
-    // Sohbet State'leri
+    // Chat States
     const [newMessage, setNewMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
     const [isProcessingDocument, setIsProcessingDocument] = useState(false);
@@ -65,12 +65,12 @@ const NotebookPage = () => {
         setCloneError('');
         try {
             const response = await cloneNotebook(notebook._id);
-            console.log("Notebook Klonlandı:", response.data);
-            alert(`'${notebook.title} (Kopya)' başarıyla kütüphanenize eklendi! Dashboard'a yönlendiriliyorsunuz.`);
+            console.log("Notebook Cloned:", response.data);
+            alert(`'${notebook.title} (Copy)' has been successfully added to your library! You are being redirected to the Dashboard.`);
             navigate(`/notebook/${response.data._id}`);
         } catch (err) {
-            setCloneError(`Klonlama sırasında hata: ${err.message}`);
-            alert(`Klonlama sırasında hata: ${err.message}`);
+            setCloneError(`Error while cloning: ${err.message}`);
+            alert(`Error while cloning: ${err.message}`);
             console.error("handleClone error:", err);
         } finally {
             setIsCloning(false);
@@ -88,11 +88,10 @@ const NotebookPage = () => {
     };
 
 
-    // Notebook verilerini çeken fonksiyon
     const fetchNotebook = async (showLoadingIndicator = false) => {
         if (!notebookId || !user) return;
         setError('');
-        if (showLoadingIndicator) setLoading(true); // Sadece ilk yüklemede veya gerekliyse
+        if (showLoadingIndicator) setLoading(true);
 
 
         try {
@@ -110,10 +109,10 @@ const NotebookPage = () => {
             }
 
         } catch (err) {
-            setError(err.message || 'Notebook detayları getirilirken bir hata oluştu.');
+            setError(err.message || 'An error occurred while fetching notebook details.');
             console.error("fetchNotebook error:", err);
         } finally {
-            setLoading(false); // Yükleme her zaman biter
+            setLoading(false);
         }
     };
 
@@ -147,11 +146,6 @@ const NotebookPage = () => {
     }, [notebook?.messages]);
 
 
-
-
-
-
-    // Dosya Seçme ve Yükleme Fonksiyonu
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -169,9 +163,9 @@ const NotebookPage = () => {
             }
             setSelectedFile(null);
             document.getElementById('fileInput').value = null;
-            await fetchNotebook(); // Listeyi güncellemek için veriyi tekrar çek
+            await fetchNotebook();
         } catch (err) {
-            setUploadError(err.message || 'Dosya yüklenirken bir hata oluştu.');
+            setUploadError(err.message || 'An error occurred while uploading the file.');
             console.error("handleFileChange error:", err);
         } finally {
             setIsUploading(false);
@@ -179,7 +173,6 @@ const NotebookPage = () => {
         }
     };
 
-    // Mesaj Gönderme Fonksiyonu
     const handleSendMessage = async () => {
         if (!newMessage.trim()) return;
 
@@ -189,7 +182,7 @@ const NotebookPage = () => {
         setError('');
 
 
-        const tempMessageId = `temp_${Date.now()}`; // Geçici, benzersiz ID
+        const tempMessageId = `temp_${Date.now()}`; // Temporary, unique ID
         setNotebook(prev => ({
             ...prev,
             messages: [...(prev?.messages || []), { role: 'user', content: userMessage, _id: tempMessageId }]
@@ -197,13 +190,10 @@ const NotebookPage = () => {
 
         try {
             await postMessageToNotebook(notebookId, userMessage);
-            // Başarılı! Backend hem kullanıcı mesajını hem de AI cevabını kaydetti.
-            // Sayfanın TAM güncel halini (AI cevabı dahil) görmek için veriyi TEKRAR ÇEK.
             await fetchNotebook();
         } catch (err) {
-            setError(err.message || 'Mesaj gönderilirken bir hata oluştu.');
+            setError(err.message || 'An error occurred while sending the message.');
             console.error("handleSendMessage error:", err);
-            // Hata durumunda Optimistic UI'da eklenen mesajı geri al (daha sağlam)
             setNotebook(prev => ({
                 ...prev,
                 messages: prev.messages.filter(msg => msg._id !== tempMessageId)
@@ -266,9 +256,9 @@ const NotebookPage = () => {
     }
 
 
-    if (loading && !notebook) return <div className="loading">Notebook yükleniyor...</div>;
-    if (error && !notebook) return <div className="error">Hata: {error}</div>;
-    if (!notebook) return <div className="error">Notebook bulunamadı veya yüklenemedi.</div>;
+    if (loading && !notebook) return <div className="loading">Notebook loading...</div>;
+    if (error && !notebook) return <div className="error">Error: {error}</div>;
+    if (!notebook) return <div className="error">Notebook not found or could not be loaded.</div>;
 
     return (
         <div>
@@ -286,7 +276,7 @@ const NotebookPage = () => {
                                     <span className="material-symbols-outlined">upload_file</span>
                                     <span>Upload Document</span>
                                 </button>
-                                {isProcessingDocument && <p className="upload-loading-message">Belge işleniyor...</p>}
+                                {isProcessingDocument && <p className="upload-loading-message">Document is processing...</p>}
                                 {uploadWarning && <p style={{ color: 'orange' }}>{uploadWarning}</p>}
                                 <input
                                     type="file"
@@ -305,7 +295,7 @@ const NotebookPage = () => {
                                 Documents
                             </h2>
                             <ul className="document-list">
-                                {(loading && !notebook.associatedDocuments?.length) && <li className="document-item">Güncelleniyor...</li>}
+                                {(loading && !notebook.associatedDocuments?.length) && <li className="document-item">Updating...</li>}
                                 {!loading && (!notebook.associatedDocuments || notebook.associatedDocuments.length === 0) ? (
                                     <li className="document-item">
                                         <p className="no-documents">No Document.</p>
@@ -374,7 +364,7 @@ const NotebookPage = () => {
                             <div className="chat-area">
                                 {(notebook.messages && notebook.messages.length === 0) && (
                                     <div className="empty-chat-message">
-                                        <p>Belgeyle ilgili sorularınızı buraya yazabilirsiniz.</p>
+                                        <p>You can write your questions about the document here.</p>
                                     </div>
                                 )}
                                 {notebook.messages?.map((msg, index) => (
@@ -392,10 +382,10 @@ const NotebookPage = () => {
                                         <div className="avatar ai-avatar">
                                             <span className="material-symbols-outlined">smart_toy</span>
                                         </div>
-                                        <div className="message-content">AI düşünüyor...</div>
+                                        <div className="message-content">AI is thinking...</div>
                                     </div>
                                 )}
-                                {error && !loading && <div className="error">Hata: {error}</div>}
+                                {error && !loading && <div className="error">Error: {error}</div>}
                                 <div ref={chatEndRef} />
                             </div>
 
@@ -403,7 +393,7 @@ const NotebookPage = () => {
                                 <div className="input-wrapper">
                                     <input
                                         className="message-input"
-                                        placeholder="Mesajınızı buraya yazın..."
+                                        placeholder="Write your message here..."
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         disabled={isSending}
@@ -463,11 +453,11 @@ const NotebookPage = () => {
                                             className="clone-button header-clone-button"
                                             onClick={handleClone}
                                             disabled={isCloning}
-                                            title="Bu notebook'u kütüphanene kopyala"
+                                            title="Copy this notebook to your library"
                                             style={{ marginTop: 10 }}
                                         >
                                             <span className="material-symbols-outlined">content_copy</span>
-                                            {isCloning ? 'Klonlanıyor...' : 'Klonla'}
+                                            {isCloning ? 'Cloning...' : 'Clone'}
                                         </button>
                                     )}
 
@@ -496,13 +486,6 @@ const NotebookPage = () => {
                                         )}
 
                                     </div>
-                                    {/* <div className="flex-1 flex items-center justify-center p-8">
-                                        <div
-                                            className="bg-white rounded-xl shadow-md p-8 flex flex-col items-center gap-4 text-center max-w-md">
-                                            <span className="material-symbols-outlined text-5xl text-gray-400">lock</span>
-                                            <p className="text-gray-600 text-lg">Chat history is only visible to the owner</p>
-                                        </div>
-                                    </div> */}
                                 </div>
                             </main>
                         </div>

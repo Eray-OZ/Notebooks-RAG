@@ -2,7 +2,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { getMyNotebooks, createNotebook } from '../services/api.js'
 import { Link, useNavigate } from 'react-router-dom'
-import CreateNotebookModal from '../components/CreateNotebookModal'; // YENİ: Modal'ı import et
+import CreateNotebookModal from '../components/CreateNotebookModal';
+import EditNotebookModal from '../components/EditNotebookModal.jsx';
 
 
 const DashboardPage = () => {
@@ -14,7 +15,11 @@ const DashboardPage = () => {
     const [notebooks, setNotebooks] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+    const [editingNotebook, setEditingNotebook] = useState(null)
+
+
 
     useEffect(() => {
         const fetchNotebooks = async () => {
@@ -34,8 +39,21 @@ const DashboardPage = () => {
     }, [])
 
 
+    const handleOpenEditModal = (notebookToEdit) => {
+        setEditingNotebook(notebookToEdit)
+        setIsEditModalOpen(true)
+    }
 
 
+    const handleUpdateSuccess = (updatedNotebook) => {
+        setNotebooks(currentNotebooks =>
+            currentNotebooks.map(nb =>
+                nb._id === updatedNotebook._id ? updatedNotebook : nb
+            )
+        )
+        setIsEditModalOpen(false)
+        setEditingNotebook(null)
+    };
 
 
     if (loading) {
@@ -94,6 +112,13 @@ const DashboardPage = () => {
                                         <span className="material-symbols-outlined likes-icon">favorite</span>
                                         <span>{notebook.likes.length}</span>
                                     </div>
+                                    <button
+                                        onClick={() => handleOpenEditModal(notebook)}
+                                        className="edit-button"
+                                        title="Edit notebook settings"
+                                    >
+                                        <span className="material-symbols-outlined">edit</span>
+                                    </button>
                                     <Link className="view-button" to={`/notebook/${notebook._id}`}>View Notebook</Link>
                                 </div>
                             </div>
@@ -106,6 +131,13 @@ const DashboardPage = () => {
             <CreateNotebookModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
+            />
+
+            <EditNotebookModal
+                isOpen={isEditModalOpen}
+                onClose={() => { setIsEditModalOpen(false); setEditingNotebook(null); }} // Close and clear state
+                notebook={editingNotebook}
+                onUpdateSuccess={handleUpdateSuccess}
             />
 
         </div>

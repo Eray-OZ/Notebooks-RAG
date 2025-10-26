@@ -28,15 +28,15 @@ api.interceptors.request.use(
 
 
 const handleApiError = (error, functionName = 'API function') => {
-    console.error(`API Error details in ${functionName}:`, error); // Hatanın tamamını logla
+    console.error(`API Error details in ${functionName}:`, error); // Log the full error
     console.error(`Full error response:`, error.response); // Log the full response
 
     if (error.response) {
-        throw error.response.data; // Backend'in { success: false, message: '...' } objesini fırlat
+        throw error.response.data; // Throw the backend's { success: false, message: '...' } object
     } else if (error.request) {
-        throw { success: false, message: 'Sunucuya ulaşılamadı. Lütfen ağ bağlantınızı kontrol edin veya sunucunun çalıştığından emin olun.' };
+        throw { success: false, message: 'Could not reach the server. Please check your network connection or make sure the server is running.' };
     } else {
-        throw { success: false, message: `İstek oluşturulurken bir hata oluştu: ${error.message}` };
+        throw { success: false, message: `An error occurred while creating the request: ${error.message}` };
     }
 }
 
@@ -189,7 +189,7 @@ export const getNotebookPreviewById = async (notebookId) => {
 
 export const updateNotebook = async (notebookId, updateData) => {
     try {
-        const response = await api.patch(`/notebook/${notebookId}`, updateData)
+        const response = await api.patch(`/notebooks/${notebookId}`, updateData)
         return response.data
     } catch (error) {
         handleApiError(error, 'updateNotebook')

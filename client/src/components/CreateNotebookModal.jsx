@@ -15,15 +15,13 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    // Modal kapalıysa render etme
     if (!isOpen) {
         return null;
     }
 
-    // Oluşturma fonksiyonu
     const handleCreate = async () => {
         if (!title.trim()) {
-            setError('Lütfen bir başlık girin.');
+            setError('Please enter a title.');
             return;
         }
 
@@ -31,7 +29,7 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
         setError('');
 
         try {
-            console.log('handleCreate içinde description:', description);
+            console.log('description in handleCreate:', description);
             const notebookData = { title, description, isPublic, category: category.trim() || undefined };
             const response = await createNotebook(notebookData);
             const newNotebookId = response.data._id;
@@ -44,7 +42,7 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
             onClose();
             navigate(`/notebook/${newNotebookId}`);
         } catch (err) {
-            setError(err.message || 'Notebook oluşturulurken bir hata oluştu.');
+            setError(err.message || 'An error occurred while creating the notebook.');
             console.error("CreateNotebookModal error:", err);
             setIsLoading(false);
         }
@@ -63,11 +61,11 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
     return (
         <div className="modal-overlay" onClick={handleClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h2 className="modal-header">Yeni Notebook Oluştur</h2>
+                <h2 className="modal-header">Create New Notebook</h2>
 
                 <div className="form-group">
                     <label className="form-label" htmlFor="notebook-title">
-                        Notebook Başlığı
+                        Notebook Title
                     </label>
                     <input
                         type="text"
@@ -75,39 +73,39 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
                         className="form-input"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Örn: Proje Fikirleri"
+                        placeholder="e.g., Project Ideas"
                         disabled={isLoading}
-                        aria-label="Notebook Başlığı"
+                        aria-label="Notebook Title"
                     />
                 </div>
 
                 <div className="form-group">
                     <label className="form-label" htmlFor="notebook-description">
-                        Açıklama
+                        Description
                     </label>
                     <textarea
                         id="notebook-description"
                         className="form-textarea"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Kısa bir açıklama girin..."
+                        placeholder="Enter a short description..."
                         disabled={isLoading}
-                        aria-label="Notebook Açıklaması"
+                        aria-label="Notebook Description"
                     />
                 </div>
 
 
                 <div className="form-group">
-                    <label className="form-label" htmlFor="notebook-category">Kategori</label>
+                    <label className="form-label" htmlFor="notebook-category">Category</label>
                     <select
                         id="notebook-category"
                         className="form-input"
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                         disabled={isLoading}
-                        aria-label="Notebook Kategorisi"
+                        aria-label="Notebook Category"
                     >
-                        <option value="">Kategori Seçin (Opsiyonel)</option>
+                        <option value="">Select Category (Optional)</option>
                         {predefinedCategories.map(cat => (
                             <option key={cat} value={cat}>
                                 {cat}
@@ -125,7 +123,7 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
                         onChange={(e) => setIsPublic(e.target.checked)}
                         disabled={isLoading}
                     />
-                    <label htmlFor="public-checkbox">Herkese Açık Yap</label>
+                    <label htmlFor="public-checkbox">Make Public</label>
                 </div>
 
                 {error && <p className="modal-error">{error}</p>}
@@ -136,14 +134,14 @@ const CreateNotebookModal = ({ isOpen, onClose }) => {
                         onClick={handleClose}
                         disabled={isLoading}
                     >
-                        İptal
+                        Cancel
                     </button>
                     <button
                         className="modal-button primary"
                         onClick={handleCreate}
                         disabled={isLoading || !title.trim()}
                     >
-                        {isLoading ? 'Oluşturuluyor...' : 'Oluştur'}
+                        {isLoading ? 'Creating...' : 'Create'}
                     </button>
                 </div>
             </div>

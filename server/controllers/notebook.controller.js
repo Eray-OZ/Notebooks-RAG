@@ -208,7 +208,7 @@ export const likeNotebook = async (req, res, next) => {
 export const updateNotebook = async (req, res, next) => {
 
     try {
-        const { title, isPublic, category } = req.body
+        const { title, isPublic, category, description } = req.body
 
         const notebook = await Notebook.findById(req.params.notebookId)
 
@@ -226,7 +226,11 @@ export const updateNotebook = async (req, res, next) => {
 
 
         if (title) {
-            notebook.title = title
+            notebook.title = title.trim()
+        }
+
+        if (description) {
+            notebook.description = description.trim()
         }
 
         if (typeof isPublic === 'boolean') {
@@ -237,7 +241,11 @@ export const updateNotebook = async (req, res, next) => {
             notebook.category = category
         }
 
-        const updatedNotebook = await notebook.save()
+        await notebook.save()
+
+        const updatedNotebook = await Notebook.findById(notebook._id)
+            .populate('owner', 'username')
+            .populate('associatedDocuments')
 
         res.status(200).json({ success: true, data: updatedNotebook })
 
