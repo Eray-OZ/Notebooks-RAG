@@ -100,7 +100,3 @@ Aşağıda, backend tarafından sunulan ana API endpoint'lerinden bazıları lis
 | POST   | `/api/notebooks/:notebookId/documents` | (Auth Gerekli) Belirli bir not defterine doküman yükler.     |
 
 ---
-
-## 6. Kurulum ve Çalıştırma
-
-Projenin kurulumu ve çalıştırılması için önceki `README.md` dosyasındaki adımları takip edebilirsiniz. Bu adımlar, backend ve frontend ortamlarının nasıl hazırlanacağını ve sunucuların nasıl başlatılacağını açıklamaktadır.
