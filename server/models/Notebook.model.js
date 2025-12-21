@@ -60,4 +60,9 @@ const NotebookSchema = new mongoose.Schema({
     }
 }, { timestamps: true })
 
+// Performance indexes
+NotebookSchema.index({ isPublic: 1, createdAt: -1 })  // For getPublicNotebooks
+NotebookSchema.index({ owner: 1, updatedAt: -1 })     // For getMyNotebooks
+NotebookSchema.index({ isPublic: 1, category: 1 })    // For category filtering
+
 export default mongoose.model('Notebook', NotebookSchema)

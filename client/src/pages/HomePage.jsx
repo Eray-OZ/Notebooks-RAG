@@ -113,14 +113,20 @@ const HomePage = () => {
             }
         };
 
-        if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-        searchTimeoutRef.current = setTimeout(() => {
+        // Only debounce when user is typing in search
+        if (searchTerm.trim() !== '') {
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+            searchTimeoutRef.current = setTimeout(() => {
+                performFetchOrSearch();
+            }, 400);
+        } else {
+            // No debounce for initial load or category change - instant!
             performFetchOrSearch();
-        }, 500);
+        }
 
         return () => { if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current); };
 
-    }, [searchTerm, selectedCategory, initialLoading]);
+    }, [searchTerm, selectedCategory]);
 
     if (initialLoading) {
         return <div className="loading-container">Page Loading...</div>;

@@ -159,7 +159,11 @@ export const getPublicNotebooks = async (req, res, next) => {
 
     try {
 
-        const notebooks = await Notebook.find({ isPublic: true }).populate('owner', 'username').sort({ createdAt: -1 })
+        const notebooks = await Notebook.find({ isPublic: true })
+            .select('title description owner category likes createdAt updatedAt')
+            .populate('owner', 'username')
+            .sort({ createdAt: -1 })
+            .lean()
 
         res.status(200).json({ success: true, data: notebooks })
 
@@ -262,8 +266,10 @@ export const getMyNotebooks = async (req, res, next) => {
     try {
 
         const notebooks = await Notebook.find({ owner: req.user._id })
+            .select('title description owner category likes clonedFrom isPublic createdAt updatedAt')
             .populate('owner', 'username')
             .sort({ updatedAt: -1 })
+            .lean()
 
         res.status(200).json({ success: true, data: notebooks })
     } catch (error) {
@@ -361,8 +367,10 @@ export const searchPublicNotebooks = async (req, res, next) => {
                 { summary: searchQuery }
             ]
         })
+            .select('title description owner category likes createdAt updatedAt')
             .populate('owner', 'username')
             .sort({ createdAt: -1 })
+            .lean()
 
         res.status(200).json({ success: true, data: notebooks })
 
@@ -389,8 +397,10 @@ export const getPublicNotebooksByCategory = async (req, res, next) => {
             isPublic: true,
             category: categoryName
         })
+            .select('title description owner category likes createdAt updatedAt')
             .populate('owner', 'username')
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean();
 
         res.status(200).json({ success: true, data: notebooks });
 

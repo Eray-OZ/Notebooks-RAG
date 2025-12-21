@@ -2,7 +2,7 @@ import config from '../config/index.js';
 
 
 
-const HF_API_BASE_URL = "https://api-inference.huggingface.co/models/";
+const HF_API_BASE_URL = "https://router.huggingface.co/hf-inference/models/";
 
 
 export const getEmbeddings = async (textChunks, batchSize = 100) => {
