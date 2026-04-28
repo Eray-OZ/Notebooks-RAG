@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RAG Notebook - Library Discovery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed-dim": "#cfbcff",
+                        "inverse-primary": "#6750a4",
+                        "outline": "#948e9c",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "on-background": "#e5e2e1",
+                        "tertiary-fixed": "#e2e2e2",
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary": "#c6c6c7",
+                        "outline-variant": "#494551",
+                        "surface-dim": "#131313",
+                        "on-primary-fixed": "#22005d",
+                        "error-container": "#93000a",
+                        "on-secondary": "#263143",
+                        "surface-variant": "#353534",
+                        "primary-fixed": "#e9ddff",
+                        "secondary": "#bcc7de",
+                        "on-primary-container": "#e0d2ff",
+                        "inverse-on-surface": "#313030",
+                        "on-surface-variant": "#cbc4d2",
+                        "surface": "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-container-highest": "#353534",
+                        "surface-container": "#201f1f",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-primary": "#381e72",
+                        "primary-container": "#6750a4",
+                        "surface-tint": "#cfbcff",
+                        "on-tertiary-container": "#d9d9d9",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-secondary-fixed": "#111c2d",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "secondary-container": "#3e495d",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#aeb9d0",
+                        "surface-container-high": "#2a2a2a",
+                        "on-tertiary": "#2f3131",
+                        "on-error": "#690005",
+                        "tertiary-container": "#5d5f5f",
+                        "background": "#131313",
+                        "primary": "#cfbcff",
+                        "surface-bright": "#3a3939",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#d8e3fb"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-caps": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "title-sm": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "title-sm": ["20px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "600" }],
+                        "headline-md": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#050505] text-on-background font-body-md text-body-md antialiased overflow-x-hidden">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 border-r border-[#1E293B] bg-[#0C0C0C] py-8 flex-shrink-0 z-20">
+<div class="px-6 mb-8 flex flex-col gap-2">
+<span class="font-['Plus_Jakarta_Sans'] text-lg font-black text-[#6750A4] uppercase tracking-widest">RAG OS</span>
+<span class="text-on-surface-variant font-label-caps text-label-caps">Professional Suite</span>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full bg-[#6750A4] text-white py-3 px-4 rounded font-label-caps text-label-caps flex items-center justify-center gap-2 hover:bg-opacity-90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Notebook
+                </button>
+</div>
+<div class="flex-1 flex flex-col gap-2">
+<a class="text-white bg-[#050505] border-l-4 border-[#6750A4] px-4 py-3 flex items-center gap-3 font-['Plus_Jakarta_Sans'] text-sm font-medium uppercase tracking-wider cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+                    Library
+                </a>
+<a class="text-slate-500 hover:text-slate-300 hover:bg-[#141414] transition-all px-4 py-3 border-l-4 border-transparent flex items-center gap-3 font-['Plus_Jakarta_Sans'] text-sm font-medium uppercase tracking-wider cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">description</span>
+                    Notebooks
+                </a>
+<a class="text-slate-500 hover:text-slate-300 hover:bg-[#141414] transition-all px-4 py-3 border-l-4 border-transparent flex items-center gap-3 font-['Plus_Jakarta_Sans'] text-sm font-medium uppercase tracking-wider cursor-pointer active:opacity-80" href="#">
+<span class="material-symbols-outlined">analytics</span>
+                    Analysis
+                </a>
+</div>
+<div class="mt-auto flex flex-col gap-2 pt-4 border-t border-[#1E293B] mx-4">
+<a class="text-slate-500 hover:text-slate-300 hover:bg-[#141414] transition-all px-4 py-3 flex items-center gap-3 font-['Plus_Jakarta_Sans'] text-sm font-medium uppercase tracking-wider cursor-pointer active:opacity-80 rounded" href="#">
+<span class="material-symbols-outlined">help_outline</span>
+                    Help
+                </a>
+<a class="text-slate-500 hover:text-slate-300 hover:bg-[#141414] transition-all px-4 py-3 flex items-center gap-3 font-['Plus_Jakarta_Sans'] text-sm font-medium uppercase tracking-wider cursor-pointer active:opacity-80 rounded" href="#">
+<span class="material-symbols-outlined">logout</span>
+                    Logout
+                </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- TopNavBar (Mobile mainly, but keeping structure per JSON for consistency if needed, though SideNav handles web. We'll show top nav for mobile, or as header for main area) -->
+<header class="md:hidden flex justify-between items-center h-16 px-6 w-full bg-[#050505] docked full-width top-0 border-b border-[#1E293B] z-10 flex-shrink-0">
+<span class="font-['Plus_Jakarta_Sans'] antialiased tracking-tight text-lg font-bold text-white uppercase tracking-widest">RAG Notebook</span>
+<div class="flex items-center gap-4 text-slate-400">
+<button class="hover:bg-[#0C0C0C] hover:text-white transition-colors duration-200 p-2 rounded active:scale-95 transition-transform">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:bg-[#0C0C0C] hover:text-white transition-colors duration-200 p-2 rounded active:scale-95 transition-transform">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-[#1E293B]" data-alt="Close up portrait of a professional man in minimal dark setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnLNWIQyaXBQkKimgVVlzRVghCqGTUbnlDwPxRpBEtcOQfoXtzKR3Asjimyjh-o50ECFQCn96YC5B89cpyl8iSrJc1FXmwFJ6fM5nlIXjURLxGpXs9XqPa3dQUm_HRaXay0PSvuevcqKyDYxYywjXDBmihX-wffXE44E5gfevHvHzqNjMoerfUsF6OSlrN1QHM4UlGlTNmnjBdiZ-2oSaaBBj8MClkM8eRBpHCuU6xa02gp4MdQyVO92y8Lf4ovh2s8RZq-pLeKzg"/>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto w-full p-gutter md:p-lg bg-[#050505]">
+<div class="max-w-container-max mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-xl">
+<div>
+<h1 class="font-headline-md text-headline-md text-on-surface mb-xs">Kütüphane Keşfi</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Explore advanced RAG pipelines, curated datasets, and high-performance embedding models across the enterprise network.</p>
+</div>
+<!-- Search Bar -->
+<div class="relative w-full md:w-96 flex-shrink-0">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline-variant">search</span>
+<input class="w-full bg-[#0C0C0C] border border-[#1E293B] text-on-surface font-body-sm text-body-sm rounded py-3 pl-10 pr-4 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors placeholder:text-outline-variant" placeholder="Search notebooks, authors, or tags..." type="text"/>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex flex-wrap gap-sm mb-lg border-b border-[#1E293B] pb-md">
+<button class="bg-primary-container text-white px-4 py-2 rounded-full font-label-caps text-label-caps border border-primary-container">ALL NOTEBOOKS</button>
+<button class="bg-[#0C0C0C] text-on-surface-variant hover:text-white px-4 py-2 rounded-full font-label-caps text-label-caps border border-[#1E293B] hover:border-outline-variant transition-colors">NATURAL LANGUAGE</button>
+<button class="bg-[#0C0C0C] text-on-surface-variant hover:text-white px-4 py-2 rounded-full font-label-caps text-label-caps border border-[#1E293B] hover:border-outline-variant transition-colors">COMPUTER VISION</button>
+<button class="bg-[#0C0C0C] text-on-surface-variant hover:text-white px-4 py-2 rounded-full font-label-caps text-label-caps border border-[#1E293B] hover:border-outline-variant transition-colors">FINANCIAL MODELS</button>
+<button class="bg-[#0C0C0C] text-on-surface-variant hover:text-white px-4 py-2 rounded-full font-label-caps text-label-caps border border-[#1E293B] hover:border-outline-variant transition-colors">RECOMMENDATION</button>
+</div>
+<!-- Bento Grid Layout for Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+<!-- Card 1: Featured (Spans 2 cols on wide) -->
+<div class="md:col-span-2 bg-[#0C0C0C] border border-[#1E293B] rounded flex flex-col md:flex-row overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="w-full md:w-2/5 h-48 md:h-auto relative bg-[#141414] border-b md:border-b-0 md:border-r border-[#1E293B]">
+<!-- Abstract structural image for RAG concept -->
+<div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity" data-alt="Abstract server rack matrix with dark blue geometric light patterns" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBAxv60OU7pv9Ct2mxiO0tTaKONOwX1-WdxtZJqXN-Spjzk8LxDXYCr25iWiY0juerx3q8uge5Jo7GK26MuoCbQeU51FddHlnLN0qCg_r2fCbcEao3mEWosVjuBoJgH2TC2qw0wQUs64TPb6vJM_svoxfymf9S64v_LbCxZBRF47K5jXGlIVlfA3Rk-Sh1lOW4rQpQFmEq8d6g1VLhJu_hpe0LLCgpccXpfvapN_I1e0D3AdS4W7ILCT_eNZGoVs_Qf3HfCE6yaZeU')"></div>
+<div class="absolute top-4 left-4 bg-[#050505] border border-[#1E293B] px-2 py-1 rounded font-label-caps text-label-caps text-primary">FEATURED PIPELINE</div>
+</div>
+<div class="p-6 flex flex-col justify-between flex-1">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-outline-variant text-[16px]">schema</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Qdrant + LlamaIndex V2</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface mb-2 group-hover:text-primary transition-colors">Enterprise Semantic Search Architecture</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">A production-ready notebook detailing the implementation of a hybrid search approach combining dense embeddings with sparse lexical search for high accuracy across complex internal docs.</p>
+</div>
+<div class="mt-6 flex items-center justify-between border-t border-[#1E293B] pt-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container border border-[#1E293B] flex items-center justify-center font-label-caps text-label-caps text-on-surface">DR</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface leading-tight">Dr. Aris Vane</span>
+<span class="font-label-caps text-label-caps text-outline-variant leading-tight mt-1">AI Research Lead</span>
+</div>
+</div>
+<div class="flex items-center gap-4 text-outline-variant">
+<div class="flex items-center gap-1 font-label-caps text-label-caps"><span class="material-symbols-outlined text-[14px]">visibility</span> 12.4k</div>
+<div class="flex items-center gap-1 font-label-caps text-label-caps"><span class="material-symbols-outlined text-[14px]">favorite</span> 842</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-[#0C0C0C] border border-[#1E293B] rounded flex flex-col overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="p-6 flex flex-col flex-1">
+<div class="flex items-start justify-between mb-4">
+<div class="bg-[#141414] border border-[#1E293B] p-2 rounded flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">dataset</span>
+</div>
+<span class="bg-surface-container border border-[#1E293B] px-2 py-1 rounded font-label-caps text-label-caps text-on-surface-variant">DATA PREP</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface mb-2 group-hover:text-primary transition-colors">Chunking Strategies for Legal PDFs</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 flex-1">Comparative analysis of recursive vs. semantic chunking on unstructured multi-column legal documents.</p>
+<div class="flex items-center justify-between border-t border-[#1E293B] pt-4">
+<div class="flex items-center gap-2">
+<img alt="Author" class="w-6 h-6 rounded-full border border-[#1E293B]" data-alt="Portrait of a female professional with glasses looking directly at camera" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTPIitgr7-dlRlnpgrc2MEBrJHJPviOf9vmu_P9Az_O_BJFOZi1tnC5Iz1fJAqprpP39gFAU4O99kh_xjF1oZ-w5zxtB8jeZcBYQhr94I_BvP10ew3R_MxRhMZZWDflBqlNQlUs8-zVBHgXicg8n5TrWmKZg-9WeEZqcPi6Pg_vvdgSvUC-u9i3qmzCvc4aFPw5fn2sJYdwqfMaFTN8jR5A-2ZN_kZR6EbbT4tJPuJhzd8oDiPNWaCi8T-e-IiYj423tc2yl38oPo"/>
+<span class="font-body-sm text-body-sm text-on-surface">Elena Rostova</span>
+</div>
+<span class="font-label-caps text-label-caps text-outline-variant">UPDATED 2D AGO</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-[#0C0C0C] border border-[#1E293B] rounded flex flex-col overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="p-6 flex flex-col flex-1">
+<div class="flex items-start justify-between mb-4">
+<div class="bg-[#141414] border border-[#1E293B] p-2 rounded flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">model_training</span>
+</div>
+<span class="bg-surface-container border border-[#1E293B] px-2 py-1 rounded font-label-caps text-label-caps text-on-surface-variant">FINETUNING</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface mb-2 group-hover:text-primary transition-colors">LoRA Adapters for Domain-Specific Q&amp;A</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 flex-1">Notebook covering the training pipeline to adapt foundational models to proprietary medical device documentation.</p>
+<div class="flex items-center justify-between border-t border-[#1E293B] pt-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container border border-[#1E293B] flex items-center justify-center font-label-caps text-label-caps text-on-surface text-[10px]">MK</div>
+<span class="font-body-sm text-body-sm text-on-surface">Marcus K.</span>
+</div>
+<span class="font-label-caps text-label-caps text-outline-variant">UPDATED 5H AGO</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-[#0C0C0C] border border-[#1E293B] rounded flex flex-col overflow-hidden group hover:border-outline-variant transition-colors">
+<div class="p-6 flex flex-col flex-1">
+<div class="flex items-start justify-between mb-4">
+<div class="bg-[#141414] border border-[#1E293B] p-2 rounded flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined">memory</span>
+</div>
+<span class="bg-surface-container border border-[#1E293B] px-2 py-1 rounded font-label-caps text-label-caps text-on-surface-variant">EVALUATION</span>
+</div>
+<h3 class="font-title-sm text-title-sm text-on-surface mb-2 group-hover:text-primary transition-colors">RAGAS Framework Implementation</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6 flex-1">Automated evaluation metrics for context precision, recall, and answer relevancy using synthetic test datasets.</p>
+<div class="flex items-center justify-between border-t border-[#1E293B] pt-4">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container border border-[#1E293B] flex items-center justify-center font-label-caps text-label-caps text-on-surface text-[10px]">SYS</div>
+<span class="font-body-sm text-body-sm text-on-surface">System Admin</span>
+</div>
+<span class="font-label-caps text-label-caps text-outline-variant">VERIFIED</span>
+</div>
+</div>
+</div>
+<!-- Card 5: Compact List Style embedded in Grid -->
+<div class="md:col-span-2 xl:col-span-1 bg-[#0C0C0C] border border-[#1E293B] rounded flex flex-col overflow-hidden">
+<div class="px-6 py-4 border-b border-[#1E293B] bg-[#141414]">
+<h3 class="font-label-caps text-label-caps text-on-surface tracking-widest">RECENTLY VIEWED</h3>
+</div>
+<div class="flex-1 flex flex-col">
+<a class="px-6 py-4 border-b border-[#1E293B] hover:bg-[#141414] transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline-variant text-[18px]">terminal</span>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Vector DB Benchmark Tool</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[16px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</a>
+<a class="px-6 py-4 border-b border-[#1E293B] hover:bg-[#141414] transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline-variant text-[18px]">description</span>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">Prompt Engineering Patterns</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[16px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</a>
+<a class="px-6 py-4 hover:bg-[#141414] transition-colors flex items-center justify-between group" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline-variant text-[18px]">api</span>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary transition-colors">OpenAI Proxy Router Setup</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[16px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

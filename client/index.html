@@ -1,41 +1,107 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Notebook AI</title>
+    <title>NoteBrain - Professional Suite</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&amp;display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <script>
         tailwind.config = {
+            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "page-bg": "#f4d6c0",
-                        "panel-bg": "#f8e2d1",
-                        "heading": "#343a40",
-                        "accent-teal": "#20c997",
-                        "accent-coral": "#fd7e14",
-                    },
-                    fontFamily: {
-                        "display": ["Nunito", "sans-serif"]
+                        "primary-fixed-dim": "#cfbcff",
+                        "inverse-primary": "#6750a4",
+                        "outline": "#948e9c",
+                        "on-primary-fixed-variant": "#4f378a",
+                        "on-background": "#e5e2e1",
+                        "tertiary-fixed": "#e2e2e2",
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary": "#c6c6c7",
+                        "outline-variant": "#494551",
+                        "surface-dim": "#131313",
+                        "on-primary-fixed": "#22005d",
+                        "error-container": "#93000a",
+                        "on-secondary": "#263143",
+                        "surface-variant": "#353534",
+                        "primary-fixed": "#e9ddff",
+                        "secondary": "#bcc7de",
+                        "on-primary-container": "#e0d2ff",
+                        "inverse-on-surface": "#313030",
+                        "on-surface-variant": "#cbc4d2",
+                        "surface": "#131313",
+                        "on-surface": "#e5e2e1",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-container-highest": "#353534",
+                        "surface-container": "#201f1f",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-primary": "#381e72",
+                        "primary-container": "#6750a4",
+                        "surface-tint": "#cfbcff",
+                        "on-tertiary-container": "#d9d9d9",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-secondary-fixed": "#111c2d",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "secondary-container": "#3e495d",
+                        "error": "#ffb4ab",
+                        "on-secondary-container": "#aeb9d0",
+                        "surface-container-high": "#2a2a2a",
+                        "on-tertiary": "#2f3131",
+                        "on-error": "#690005",
+                        "tertiary-container": "#5d5f5f",
+                        "background": "#131313",
+                        "primary": "#cfbcff",
+                        "surface-bright": "#3a3939",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#d8e3fb"
                     },
                     borderRadius: {
-                        "DEFAULT": "0.5rem",
-                        "lg": "0.75rem",
-                        "xl": "1rem",
-                        "full": "9999px"
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
                     },
-                },
-            },
+                    spacing: {
+                        "md": "24px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "container-max": "1280px"
+                    },
+                    fontFamily: {
+                        "body-sm": ["Plus Jakarta Sans", "sans-serif"],
+                        "label-caps": ["Plus Jakarta Sans", "sans-serif"],
+                        "display-lg": ["Plus Jakarta Sans", "sans-serif"],
+                        "body-md": ["Plus Jakarta Sans", "sans-serif"],
+                        "title-sm": ["Plus Jakarta Sans", "sans-serif"],
+                        "headline-md": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    fontSize: {
+                        "body-sm": ["14px", { lineHeight: "1.5", letterSpacing: "0", fontWeight: "400" }],
+                        "label-caps": ["12px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "display-lg": ["48px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "1.6", letterSpacing: "0", fontWeight: "400" }],
+                        "title-sm": ["20px", { lineHeight: "1.4", letterSpacing: "0", fontWeight: "600" }],
+                        "headline-md": ["32px", { lineHeight: "1.2", letterSpacing: "-0.01em", fontWeight: "600" }]
+                    }
+                }
+            }
         }
     </script>
   </head>
-  <body>
+  <body class="bg-[#050505] text-on-background font-body-md text-body-md antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

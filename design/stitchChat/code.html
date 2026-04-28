@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>RAG Notebook - Detail &amp; Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed-dim": "#cfbcff",
+                    "inverse-primary": "#6750a4",
+                    "outline": "#948e9c",
+                    "on-primary-fixed-variant": "#4f378a",
+                    "on-background": "#e5e2e1",
+                    "tertiary-fixed": "#e2e2e2",
+                    "inverse-surface": "#e5e2e1",
+                    "tertiary": "#c6c6c7",
+                    "outline-variant": "#494551",
+                    "surface-dim": "#131313",
+                    "on-primary-fixed": "#22005d",
+                    "error-container": "#93000a",
+                    "on-secondary": "#263143",
+                    "surface-variant": "#353534",
+                    "primary-fixed": "#e9ddff",
+                    "secondary": "#bcc7de",
+                    "on-primary-container": "#e0d2ff",
+                    "inverse-on-surface": "#313030",
+                    "on-surface-variant": "#cbc4d2",
+                    "surface": "#131313",
+                    "on-surface": "#e5e2e1",
+                    "surface-container-low": "#1c1b1b",
+                    "surface-container-highest": "#353534",
+                    "surface-container": "#201f1f",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-tertiary-fixed": "#1a1c1c",
+                    "on-primary": "#381e72",
+                    "primary-container": "#6750a4",
+                    "surface-tint": "#cfbcff",
+                    "on-tertiary-container": "#d9d9d9",
+                    "on-secondary-fixed-variant": "#3c475a",
+                    "secondary-fixed-dim": "#bcc7de",
+                    "on-secondary-fixed": "#111c2d",
+                    "on-tertiary-fixed-variant": "#454747",
+                    "tertiary-fixed-dim": "#c6c6c7",
+                    "secondary-container": "#3e495d",
+                    "error": "#ffb4ab",
+                    "on-secondary-container": "#aeb9d0",
+                    "surface-container-high": "#2a2a2a",
+                    "on-tertiary": "#2f3131",
+                    "on-error": "#690005",
+                    "tertiary-container": "#5d5f5f",
+                    "background": "#131313",
+                    "primary": "#cfbcff",
+                    "surface-bright": "#3a3939",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed": "#d8e3fb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "24px",
+                    "xl": "80px",
+                    "base": "8px",
+                    "sm": "12px",
+                    "xs": "4px",
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "container-max": "1280px"
+            },
+            "fontFamily": {
+                    "body-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-caps": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "title-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-md": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "1",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "title-sm": [
+                            "20px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-md": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #050505; color: #e5e2e1; }
+    </style>
+</head>
+<body class="h-screen w-full flex flex-col overflow-hidden bg-[#050505] text-on-surface font-body-md text-body-md">
+<!-- TopNavBar -->
+<header class="bg-[#050505] font-['Plus_Jakarta_Sans'] antialiased tracking-tight docked full-width top-0 border-b border-[#1E293B] flex justify-between items-center h-16 px-6 w-full shrink-0">
+<div class="flex items-center gap-4">
+<div class="text-lg font-bold text-white uppercase tracking-widest">RAG Notebook</div>
+</div>
+<div class="flex-1 flex justify-center px-8">
+<div class="relative w-full max-w-md hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">search</span>
+<input class="w-full bg-[#0C0C0C] border border-[#1E293B] rounded-DEFAULT py-2 pl-10 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-[#6750A4] focus:ring-1 focus:ring-[#6750A4] transition-colors font-body-sm text-body-sm" placeholder="Search across all notebooks..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-slate-400 hover:bg-[#0C0C0C] hover:text-white transition-colors duration-200 p-2 rounded-DEFAULT active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-slate-400 hover:bg-[#0C0C0C] hover:text-white transition-colors duration-200 p-2 rounded-DEFAULT active:scale-95 transition-transform flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-[#1E293B]">
+<img alt="User profile" class="h-full w-full object-cover" data-alt="professional headshot of a person with neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD12SiiYfTI749oEx9S62WSUB_phILD-r8glziseX468gHrrUbuoa_V2G-WahzMBFKZPx5rJLC783zwt95ZsQk9JWzcURbG3LuQU67C6-0WBEB8BzkUzL0kDC3UE8J_hOPl1HBaneQE6UuGQ2EuH0j2DOzRBXjANfgxYLy16zycoMGhKMPsaYc_f2BmWuHBB8S86wTmfP4zygcMCs3DneB5oqwFywv_HoGDMys2H_XY94o0Ycg2z1F79wUQwamFXimaAqnSCWIK2xU"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-[#0C0C0C] font-['Plus_Jakarta_Sans'] text-sm font-medium uppercase tracking-wider h-screen w-64 border-r border-[#1E293B] flex flex-col h-full py-8 shrink-0 hidden md:flex">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-6">
+<div class="h-10 w-10 bg-primary-container rounded-DEFAULT flex items-center justify-center text-white font-bold">
+<span class="material-symbols-outlined">data_object</span>
+</div>
+<div>
+<div class="text-[#6750A4] font-black text-lg leading-tight">RAG OS</div>
+<div class="text-slate-500 text-xs capitalize tracking-normal">Professional Suite</div>
+</div>
+</div>
+<button class="w-full bg-[#6750A4] text-white py-2.5 px-4 rounded-DEFAULT hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 font-semibold capitalize tracking-normal text-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Notebook
+                </button>
+</div>
+<div class="flex-1 flex flex-col gap-1 px-2 overflow-y-auto">
+<a class="text-slate-500 hover:text-slate-300 px-4 py-3 hover:bg-[#141414] transition-all cursor-pointer active:opacity-80 rounded-DEFAULT flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="capitalize tracking-normal">Library</span>
+</a>
+<a class="text-white bg-[#050505] border-l-4 border-[#6750A4] px-4 py-3 hover:bg-[#141414] transition-all cursor-pointer active:opacity-80 rounded-r-DEFAULT flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="capitalize tracking-normal">Notebooks</span>
+</a>
+<a class="text-slate-500 hover:text-slate-300 px-4 py-3 hover:bg-[#141414] transition-all cursor-pointer active:opacity-80 rounded-DEFAULT flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="capitalize tracking-normal">Analysis</span>
+</a>
+</div>
+<div class="mt-auto px-2 border-t border-[#1E293B] pt-4 flex flex-col gap-1">
+<a class="text-slate-500 hover:text-slate-300 px-4 py-3 hover:bg-[#141414] transition-all cursor-pointer active:opacity-80 rounded-DEFAULT flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+<span class="capitalize tracking-normal">Help</span>
+</a>
+<a class="text-slate-500 hover:text-slate-300 px-4 py-3 hover:bg-[#141414] transition-all cursor-pointer active:opacity-80 rounded-DEFAULT flex items-center gap-3" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="capitalize tracking-normal">Logout</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area (Two-Panel Layout) -->
+<main class="flex-1 flex flex-col md:flex-row overflow-hidden">
+<!-- Left Panel: File Manager -->
+<section class="w-full md:w-1/3 lg:w-[320px] bg-[#0C0C0C] border-r border-[#1E293B] flex flex-col h-full shrink-0">
+<div class="p-4 border-b border-[#1E293B] flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h2 class="font-title-sm text-title-sm text-white">Sources</h2>
+<span class="text-slate-500 font-body-sm text-body-sm">4 Files</span>
+</div>
+<button class="w-full bg-transparent border border-[#1E293B] text-white py-2 px-4 hover:border-[#6750A4] transition-colors flex items-center justify-center gap-2 font-label-caps text-label-caps uppercase">
+<span class="material-symbols-outlined text-[16px]">upload_file</span>
+                        Dosya Yükle
+                    </button>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-1">
+<!-- Document Item -->
+<div class="group flex items-center justify-between p-3 rounded-DEFAULT hover:bg-[#141414] transition-colors border border-transparent hover:border-[#1E293B] cursor-pointer">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-[#6750A4]">picture_as_pdf</span>
+<div class="flex flex-col truncate">
+<span class="text-white font-body-sm text-body-sm truncate">Q3_Financial_Report_Final.pdf</span>
+<span class="text-slate-500 text-[11px]">2.4 MB • Indexed</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-white transition-all p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Document Item -->
+<div class="group flex items-center justify-between p-3 rounded-DEFAULT hover:bg-[#141414] transition-colors border border-transparent hover:border-[#1E293B] cursor-pointer">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-slate-400">description</span>
+<div class="flex flex-col truncate">
+<span class="text-white font-body-sm text-body-sm truncate">Competitor_Analysis_Notes.docx</span>
+<span class="text-slate-500 text-[11px]">840 KB • Indexed</span>
+</div>
+</div>
+<button class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-white transition-all p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Document Item -->
+<div class="group flex items-center justify-between p-3 rounded-DEFAULT hover:bg-[#141414] transition-colors border border-transparent hover:border-[#1E293B] cursor-pointer bg-[#141414] border-[#1E293B]">
+<div class="flex items-center gap-3 overflow-hidden">
+<span class="material-symbols-outlined text-slate-400">table</span>
+<div class="flex flex-col truncate">
+<span class="text-white font-body-sm text-body-sm truncate">Market_Data_2023_Raw.csv</span>
+<span class="text-slate-500 text-[11px]">12.1 MB • Indexing...</span>
+</div>
+</div>
+<div class="h-4 w-4 border-2 border-slate-600 border-t-[#6750A4] rounded-full animate-spin"></div>
+</div>
+</div>
+</section>
+<!-- Right Panel: Chat Interface -->
+<section class="flex-1 flex flex-col bg-[#050505] relative">
+<!-- Notebook Header -->
+<div class="h-16 border-b border-[#1E293B] bg-[#0C0C0C] flex items-center justify-between px-6 shrink-0">
+<div class="flex items-center gap-4">
+<h1 class="font-title-sm text-title-sm text-white">Market Expansion Strategy Q4</h1>
+<span class="bg-[#141414] border border-[#1E293B] px-2 py-0.5 rounded-sm text-[11px] text-slate-400 font-label-caps uppercase">Analysis Mode</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-400 hover:text-white hover:bg-[#141414] rounded-DEFAULT border border-transparent hover:border-[#1E293B] transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-white hover:bg-[#141414] rounded-DEFAULT border border-transparent hover:border-[#1E293B] transition-colors" title="Clone">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-1.5 text-white bg-transparent border border-[#1E293B] hover:border-slate-500 rounded-DEFAULT transition-colors font-body-sm text-body-sm ml-2">
+<span class="material-symbols-outlined text-[18px]">share</span>
+                            Share
+                        </button>
+</div>
+</div>
+<!-- Chat Canvas -->
+<div class="flex-1 overflow-y-auto p-6 md:p-8 space-y-8 pb-32">
+<!-- AI Message -->
+<div class="flex gap-4 max-w-4xl mx-auto w-full">
+<div class="h-8 w-8 rounded-DEFAULT bg-[#141414] border border-[#1E293B] flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-[#6750A4] text-[18px]">smart_toy</span>
+</div>
+<div class="flex-1 space-y-3 text-slate-300 font-body-sm text-body-sm">
+<p>I've analyzed the uploaded documents. Based on the Q3 Financial Report and the Competitor Analysis notes, what specific aspects of the market expansion strategy would you like to explore?</p>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex gap-4 max-w-4xl mx-auto w-full flex-row-reverse">
+<div class="h-8 w-8 rounded-DEFAULT bg-[#1E293B] overflow-hidden shrink-0 mt-1">
+<img alt="User" class="h-full w-full object-cover" data-alt="professional headshot of a person with neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKXnB4kV8L6myuphISCJG1CybAv7Nqie7SaXQh9E_AXuYh_dBia9aETzeoN6tdpk1IJxD-wkTEwfQ4_6mTfMLaquYpq1fsILTcwq0T7dWb9daYeDBCbKKcLaMowROjEiD_w2R4AvXA84KfoEQ0xH-HDTjNqfa9EQKih0Xm5rVqVxmTgpMqzFEvRzOZ_g9_dPEWQfyKsNat-n-khvhipe1LfQkr7In5eONlKi0La4WFeyB0BLeOIn20XaziQsqKcDw1weX9Pb0FB8k"/>
+</div>
+<div class="flex-1 bg-[#141414] border border-[#1E293B] p-4 rounded-DEFAULT rounded-tr-none text-white font-body-sm text-body-sm max-w-2xl ml-auto">
+<p>Summarize the key weaknesses of our top 2 competitors as outlined in the notes, and cross-reference them with our strengths from the Q3 report.</p>
+</div>
+</div>
+<!-- AI Message (Complex) -->
+<div class="flex gap-4 max-w-4xl mx-auto w-full">
+<div class="h-8 w-8 rounded-DEFAULT bg-[#141414] border border-[#1E293B] flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-[#6750A4] text-[18px]">smart_toy</span>
+</div>
+<div class="flex-1 space-y-4 text-slate-300 font-body-sm text-body-sm">
+<p>Based on the documents provided, here is the cross-reference analysis:</p>
+<div class="border border-[#1E293B] bg-[#0C0C0C] rounded-DEFAULT overflow-hidden">
+<div class="bg-[#141414] px-4 py-2 border-b border-[#1E293B] flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-slate-400">table_view</span>
+<span class="font-label-caps text-label-caps text-slate-300 uppercase">Analysis Matrix</span>
+</div>
+<div class="p-0 overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-[#1E293B]">
+<th class="p-3 font-medium text-white border-r border-[#1E293B]">Competitor</th>
+<th class="p-3 font-medium text-white border-r border-[#1E293B]">Identified Weakness</th>
+<th class="p-3 font-medium text-[#6750A4]">Our Correlating Strength (Q3)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-[#1E293B]">
+<td class="p-3 border-r border-[#1E293B]">TechCorp Alpha</td>
+<td class="p-3 border-r border-[#1E293B]">High customer churn in enterprise tier; rigid pricing models.</td>
+<td class="p-3">Enterprise retention up 14% Q/Q; flexible SLA adoption noted as key driver.</td>
+</tr>
+<tr>
+<td class="p-3 border-r border-[#1E293B]">GlobalSys Beta</td>
+<td class="p-3 border-r border-[#1E293B]">Delayed rollout of AI features; tech debt in legacy infrastructure.</td>
+<td class="p-3">Successful deployment of V2.0 AI integration completed under budget.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<span class="inline-flex items-center gap-1 px-2 py-1 border border-[#1E293B] bg-[#0C0C0C] rounded-sm text-[11px] text-slate-400 cursor-pointer hover:border-slate-500">
+<span class="material-symbols-outlined text-[12px]">description</span>
+                                    Competitor_Analysis_Notes.docx (Pg 2)
+                                </span>
+<span class="inline-flex items-center gap-1 px-2 py-1 border border-[#1E293B] bg-[#0C0C0C] rounded-sm text-[11px] text-slate-400 cursor-pointer hover:border-slate-500">
+<span class="material-symbols-outlined text-[12px]">picture_as_pdf</span>
+                                    Q3_Financial_Report.pdf (Pg 14)
+                                </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="absolute bottom-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-12">
+<div class="max-w-4xl mx-auto w-full relative">
+<div class="bg-[#0C0C0C] border border-[#1E293B] rounded-DEFAULT focus-within:border-[#6750A4] transition-colors p-2 flex flex-col shadow-lg shadow-black/50">
+<textarea class="w-full bg-transparent border-none text-white placeholder-slate-500 resize-none focus:ring-0 font-body-sm text-body-sm p-2" placeholder="Ask a question or request analysis..." rows="2"></textarea>
+<div class="flex justify-between items-center px-2 pt-2 pb-1 border-t border-[#1E293B]">
+<div class="flex items-center gap-1">
+<button class="p-1.5 text-slate-400 hover:text-white transition-colors rounded-sm hover:bg-[#141414]" title="Add context">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+</button>
+<button class="p-1.5 text-slate-400 hover:text-white transition-colors rounded-sm hover:bg-[#141414]" title="Slash commands">
+<span class="material-symbols-outlined text-[18px]">keyboard_command_key</span>
+</button>
+</div>
+<button class="bg-[#6750A4] text-white p-1.5 rounded-DEFAULT hover:bg-opacity-90 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+<div class="text-center mt-2">
+<span class="text-[10px] text-slate-600 uppercase tracking-widest font-label-caps">AI can make mistakes. Verify critical data.</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</body></html>
